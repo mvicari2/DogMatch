@@ -156,7 +156,7 @@ class DoggosPost extends Component {
                 smellRating: ''
             });
         });
-        this.props.history.push('/doggos/profiles');
+        this.props.history.push('/');
     };
 
     render () {

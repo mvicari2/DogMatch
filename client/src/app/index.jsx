@@ -9,7 +9,7 @@ function App() {
         <Router>
             <NavBar />
             <Switch>
-                <Route path="/doggos/profiles" exact component={DoggoProfiles} />
+                <Route path="/" exact component={DoggoProfiles} />
                 <Route path="/doggos/create" exact component={DoggosPost} />
                 <Route
                     path="/doggos/update/:id"
