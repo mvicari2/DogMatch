@@ -11,7 +11,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import colorSelect from '../resources/resources';
-
+import {FaBirthdayCake} from 'react-icons/fa';
 
 const customStyles = {
     content : {
@@ -283,7 +283,9 @@ class DoggoUpdate extends Component {
                     <Label>Birthday: {bday}</Label>                                   
                     <br />
                     <div>
-                        <Button onClick={this.openModal}><span className="glyphicon glyphicon-menu-down"></span>Show Birthday Calendar</Button>
+                        <Button onClick={this.openModal}>
+                            <FaBirthdayCake /> Show Birthday Calendar
+                        </Button>
                         <Modal
                         isOpen={this.state.modalIsOpen}
                         onAfterOpen={this.afterOpenModal}
