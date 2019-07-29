@@ -1,126 +1,150 @@
-// import React, { Component } from 'react';
-// import api from '../api';
-// import styled from 'styled-components';
-// //import Select from "react-select";
-// //import makeAnimated from 'react-select/animated';
-// //import InfiniteCalendar from "react-infinite-calendar";
-// import 'react-infinite-calendar/styles.css';
-// //import Modal from 'react-modal';
+import React, { Component } from 'react';
+import api from '../api';
+import styled from 'styled-components';
+import Moment from 'react-moment';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import {FaBirthdayCake} from 'react-icons/fa';
 
+const Title = styled.h1.attrs({
+    className: 'h1',
+})`
+    text-align: center;
+`;
 
-// // const customStyles = {
-// //     content : {
-// //       top                   : '50%',
-// //       left                  : '50%',
-// //       right                 : 'auto',
-// //       bottom                : 'auto',
-// //       marginRight           : '-50%',
-// //       transform             : 'translate(-50%, -50%)'
-// //     }
-// //   };
-   
-//   //Modal.setAppElement('#root'); 
-//   //const animatedComponents = makeAnimated();
+const Wrapper = styled.div.attrs({
+    className: 'form-group col-sm-8',
+})`
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+`;
 
-// const Title = styled.h1.attrs({
-//     className: 'h1',
-// })`
-//     text-align: center;
-// `;
+const Label = styled.h5`
+    margin: 5px;
+    color: #616b61;
+    text-decoration: underline;
+`;
 
-// const Wrapper = styled.div.attrs({
-//     className: 'form-group col-sm-8',
-// })`
-//     display: block;
-//     margin-left: auto;
-//     margin-right: auto;
-//     text-align: center;
-// `;
+const Button = styled.button.attrs({
+    className: `btn btn-primary`,
+})`
+    margin: 15px 15px 15px 5px;
+`;
 
-// const Label = styled.label`
-//     margin: 5px;
-// `;
+const DeleteButton = styled.button.attrs({
+    className: `btn btn-danger`,
+})`
+    margin: 15px 15px 15px 5px;    
+`;
 
-// // const InputText = styled.input.attrs({
-// //     className: 'form-control',
-// // })`
-// //     margin: 5px;
-// // `;
+class UpdateDoggo extends Component {
+    updateProfile = e => {
+        e.preventDefault();
 
-// const DoggoValues = styled.input.attrs({
-//     className: 'h5'
-// })`
-//     text-color: blue;
-// `;
+        window.location.href = `/doggos/update/${this.props.id}`
+    }
 
-// const Button = styled.button.attrs({
-//     className: `btn btn-primary`,
-// })`
-//     margin: 15px 15px 15px 5px;
-// `;
+    render() {
+        return <Button onClick={this.updateProfile}>Update {this.props.name}'s Profile </Button>
+    }
+}
 
-// // const CancelButton = styled.a.attrs({
-// //     className: `btn btn-danger`,
-// // })`
-// //     margin: 15px 15px 15px 5px;
-// // `;
+class Profile extends Component {
+    constructor(props) {
+        super(props)
 
-// class Profile extends Component {
-//     constructor(props) {
-//         super(props)
+        this.state = {
+            id: this.props.match.params.id,
+            name: '',
+            breed: '',
+            color: [],
+            age: '',
+            weight: '',
+            birthday: '',
+            smellRating: ''
+        };
+    }   
 
-//         this.state = {
-//             id: this.props.match.params.id,
-//             temperment: '',
-//             friends: []
-//         }
-//     }
+    handleDeleteDoggo = async e => {
+        e.preventDefault();
+    
+        if (
+            window.confirm(
+                `Are you sure you want to delete doggo "${this.state.name}" permanently?`,
+            )
+        ) {
+            api.deleteDoggoById(this.state.id);
+            this.props.history.push('/');
+            window.location.reload();//force reload profile table entities
+        }
+    };
         
-//     componentDidMount = async () => {
-//         const { id } = this.state;
-//         const doggo = await api.getDoggoById(id);
+    componentDidMount = async () => {
+        const { id } = this.state;
+        const doggo = await api.getDoggoById(id);      
 
-//         this.setState({
-//             temperment: doggo.data.data.temperment,
-//             friends: doggo.data.data.friends
-//         });
-//     };
+        this.setState({
+            name: doggo.data.data.name,           
+            breed: doggo.data.data.breed,
+            color: doggo.data.data.color,
+            age: doggo.data.data.age,
+            weight: doggo.data.data.weight,
+            birthday: doggo.data.data.birthday,
+            smellRating: doggo.data.data.smellRating
+        });        
+    };
 
-//     //extended prfile
-//     handleUpdateDoggo = async () => {        
-//         const { id, temperment, friends } = this.state;                
-//         const payload = { id, temperment, friends };
 
-//         console.log(payload);
+    render() {
+        const { name, breed, color, age, weight, birthday, smellRating } = this.state;
+        const bday = this.state.birthday === '' || this.state.birthday === null 
+        ? 'No Birthday Entered' 
+        : <Moment format="MM/DD/YYYY">{birthday}</Moment>;
 
-//         await api.updateDoggoById(id, payload).then(res => {
-//             window.alert(`Extended Profile Saved Successfully`)
-//             this.setState({
-//                 id: this.props.match.params.id,
-//                 temperment: '',
-//                 friends: []                 
-//             })
-//         });
-//     };
+        return (
+            <Container>
+                <Title>{name}'s Profile</Title>
+                <Wrapper>
+                    <Row>
+                        <Col>
+                            <Label>Name: </Label>
+                            {name}
+                        </Col>
+                        <Col>
+                            <Label>Breed: </Label>
+                            {breed}
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm>
+                            <Label>Color: </Label> {color.join(', ')}
+                        </Col>
+                        <Col sm>
+                            <Label>Age: </Label>
+                            {age}  
+                        </Col>                    
+                    </Row>
+                    <Row>
+                        <Col>
+                            <Label>Weight: </Label>
+                            {weight}
+                        </Col>
+                        <Col>
+                            <Label>Smell Rating: </Label>
+                            {smellRating}
+                        </Col>
+                    </Row>
+                    <Label>Birthday <FaBirthdayCake />: </Label> {bday}                                    
+                    <br />
+                    <UpdateDoggo id={this.state.id} name={this.state.name} />
+                    <DeleteButton onClick={this.handleDeleteDoggo}>Delete Profile</DeleteButton>                    
+                </Wrapper>
+            </Container>
+        )
+    }
+}
 
-//     render() {
-//         const { temperment, friends } = this.state;
-//         return (
-//             <Container>
-//                 <Title>{name}'s Profile</Title>
-//                 <Wrapper>
-//                     <Row>
-//                         <Col>
-//                             <Label>Name: </Label>
-//                                 <DoggoValues>{name}</DoggoValues>
-//                         </Col>                         
-
-//                     <Button href={'doggos/update'}>Save Extended Profile</Button>
-//                     <Button href={'/doggos/profiles'}>Back to Profile List</Button>
-//                 </Wrapper>
-//             </Container>
-//         )
-//     }
-// }
-
-// export default Profile;
+export default Profile;

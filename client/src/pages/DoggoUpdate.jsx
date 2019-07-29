@@ -58,10 +58,10 @@ const Button = styled.button.attrs({
     margin: 15px 15px 15px 5px;
 `;
 
-const CancelButton = styled.a.attrs({
+const DeleteButton = styled.button.attrs({
     className: `btn btn-danger`,
 })`
-    margin: 15px 15px 15px 5px;
+    margin: 15px 15px 15px 5px;    
 `;
 
 class DoggoUpdate extends Component {
@@ -147,12 +147,26 @@ class DoggoUpdate extends Component {
         const smellRating = e.target.value;
         this.setState({ smellRating });
     };
+
+    handleDeleteDoggo = async e => {
+        e.preventDefault();
+    
+        if (
+            window.confirm(
+                `Are you sure you want to delete doggo "${this.state.name}" permanently?`,
+            )
+        ) {
+            api.deleteDoggoById(this.state.id);
+            this.props.history.push('/');
+            window.location.reload();//force reload profile table entities
+        }
+    };
         
     componentDidMount = async () => {
         const { id } = this.state;
         const doggo = await api.getDoggoById(id);
 
-        //PrepareColor Array for React-Select dropdown
+        //Prepare Color Array for React-Select dropdown
         var colArray = doggo.data.data.color;
         console.log(colArray);
         var colorArray = colArray.map(c => ({
@@ -207,7 +221,7 @@ class DoggoUpdate extends Component {
 
         return (
             <Container>
-                <Title>Update Doggo Profile</Title>
+                <Title>Update {name}'s Profile</Title>
                 <Wrapper>
                     <Row>
                         <Col>
@@ -307,7 +321,7 @@ class DoggoUpdate extends Component {
                         </Modal>
                     </div>
                     <Button onClick={this.handleUpdateDoggo}>Update Doggo Profile</Button>
-                    <CancelButton href={'/doggos/profiles'}>Cancel</CancelButton>
+                    <DeleteButton onClick={this.handleDeleteDoggo}>Delete Doggo Profile</DeleteButton>                    
                 </Wrapper>
             </Container>
         )

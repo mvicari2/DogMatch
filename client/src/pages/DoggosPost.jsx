@@ -145,7 +145,7 @@ class DoggosPost extends Component {
         console.log(payload);
 
         await api.postDoggo(payload).then(res => {
-            window.alert(`Doggo successfully saved!`);
+            window.alert(`${name} successfully saved!`);
             this.setState({
                 name: '',
                 breed: '',
@@ -267,7 +267,7 @@ class DoggosPost extends Component {
                         </Modal>
                     </div>
                     <Button onClick={this.handlePostDoggo}>Save Doggo Profile</Button>
-                    <CancelButton href={'/doggos/profiles'}>Cancel</CancelButton>
+                    <CancelButton href={'/'}>Cancel</CancelButton>
                 </Wrapper>
             </Container>            
         )

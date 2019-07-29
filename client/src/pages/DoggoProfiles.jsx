@@ -3,9 +3,21 @@ import ReactTable from 'react-table';
 import api from '../api';
 import styled from 'styled-components';
 import 'react-table/react-table.css';
+import Moment from 'react-moment';
 
 const Wrapper = styled.div`
     padding: 0 40px 40px 40px;
+`;
+
+const Profile = styled.div`
+    color: green;
+    cursor: pointer;
+`;
+
+const Title = styled.h1.attrs({
+    className: 'h1',
+})`
+    text-align: center;
 `;
 
 const Update = styled.div`
@@ -18,9 +30,21 @@ const Delete = styled.div`
     cursor: pointer;
 `;
 
+class ViewProfile extends Component {
+        viewProfile = e => {
+        e.preventDefault();
+
+        window.location.href = `/doggos/profile/${this.props.id}`
+    }
+
+    render() {
+        return <Profile onClick={this.viewProfile}>View Profile</Profile>
+    }
+}
+
 class UpdateDoggo extends Component {
-    updateProfile = event => {
-        event.preventDefault();
+    updateProfile = e => {
+        e.preventDefault();
 
         window.location.href = `/doggos/update/${this.props.id}`
     }
@@ -31,12 +55,12 @@ class UpdateDoggo extends Component {
 }
 
 class DeleteDoggo extends Component {
-    deleteProfile = event => {
-        event.preventDefault();
+    deleteProfile = e => {
+        e.preventDefault();
 
         if (
             window.confirm(
-                `Are you sure you want to delete doggo # ${this.props.id} permanently?`,
+                `Are you sure you want to delete doggo "${this.props.name}" permanently?`,
             )
         ) {
             api.deleteDoggoById(this.props.id);
@@ -54,8 +78,7 @@ class DoggoProfiles extends Component {
         super(props)
         this.state = {
             profiles: [],
-            columns: [],
-            isLoading: false,
+            columns: []
         }
     }
 
@@ -71,49 +94,43 @@ class DoggoProfiles extends Component {
     }
 
     render() {
-        const { profiles, isLoading } = this.state;
+        const { profiles } = this.state;
         console.log('Doggo Profiles: ', profiles);
 
         const columns = [
             {
                 Header: 'ID',
-                accessor: '_id',
-                filterable: true
+                accessor: '_id'
             },
             {
                 Header: 'Name',
-                accessor: 'name',
-                filterable: true
+                accessor: 'name'
             },
             {
                 Header: 'Breed',
-                accessor: 'breed',
-                filterable: true
+                accessor: 'breed'
             },
             {
                 Header: 'Color',
                 accessor: 'color',
-                filterable: true
+                Cell: props => <span>{props.value.join(', ')}</span>
             },
             {
                 Header: 'Age',
-                accessor: 'age',
-                filterable: true
+                accessor: 'age'
             },
             {
                 Header: 'Weight',
-                accessor: 'weight',
-                filterable: true
+                accessor: 'weight'
             },
             {
                 Header: 'Birthday',
                 accessor: 'birthday',
-                filterable: true
+                Cell: props => <Moment format="MM/DD/YYYY">{props.value}</Moment>
             },
             {
                 Header: 'Smell Rating',
-                accessor: 'smellRating',
-                filterable: true
+                accessor: 'smellRating'
             },
             {
                 Header: '',
@@ -121,7 +138,7 @@ class DoggoProfiles extends Component {
                 Cell: function(props) {
                     return (
                         <span>
-                            <DeleteDoggo id={props.original._id} />
+                            <ViewProfile id={props.original._id} />
                         </span>
                     )
                 },
@@ -137,25 +154,33 @@ class DoggoProfiles extends Component {
                     )
                 },
             },
+            {
+                Header: '',
+                accessor: '',
+                Cell: function(props) {
+                    return (
+                        <span>
+                            <DeleteDoggo id={props.original._id} name={props.original.name} />
+                        </span>
+                    )
+                },
+            }            
         ];
-
-        let showTable = true;
-        if (!profiles.length) {
-            showTable = false;           
-        }
 
         return (
             <Wrapper>
-                {showTable && (
-                    <ReactTable
-                        data={profiles}
-                        columns={columns}
-                        loading={isLoading}
-                        defaultPageSize={50}
-                        showPageSizeOptions={true}
-                        minRows={0}
-                    />
-                )}
+            <Title>Doggo Profiles</Title>
+            <br />                
+                <ReactTable
+                    data={profiles}
+                    noDataText="No Doggos Saved!"
+                    columns={columns}
+                    className="-striped -highlight"
+                    //loading={isLoading} //might add again for larger data sets
+                    defaultPageSize={50}
+                    showPageSizeOptions={true}
+                    minRows={5}
+                />                
             </Wrapper>
         )
     }

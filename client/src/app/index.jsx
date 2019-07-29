@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { NavBar } from '../components';
 import { DoggoProfiles, DoggosPost, DoggoUpdate } from '../pages';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Profile from '../pages/Profile';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                     exact
                     component={DoggoUpdate}
                 />
+                <Route path="/doggos/profile/:id" exact component={Profile} />
             </Switch>
         </Router>
     )
