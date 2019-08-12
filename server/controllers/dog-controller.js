@@ -57,6 +57,7 @@ updateDog = async (req, res) => {
         dog.weight = body.weight;
         dog.birthday = body.birthday;
         dog.smellRating = body.smellRating;
+        dog.fileName = body.fileName;
         dog
             .save()
             .then(() => {
@@ -104,7 +105,7 @@ getDogById = async (req, res) => {
         }
         return res.status(200).json({ success: true, data: dog });
     }).catch(err => console.log(err));
-}
+};
 
 getDogs = async (req, res) => {
     await Dog.find({}, (err, dogs) => {
@@ -118,12 +119,12 @@ getDogs = async (req, res) => {
         }
         return res.status(200).json({ success: true, data: dogs });
     }).catch(err => console.log(err));
-}
+};
 
 module.exports = {
     createDog,
     updateDog,
     deleteDog,
     getDogs,
-    getDogById,
+    getDogById
 };

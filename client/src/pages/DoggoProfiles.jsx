@@ -34,25 +34,25 @@ class ViewProfile extends Component {
         viewProfile = e => {
         e.preventDefault();
 
-        window.location.href = `/doggos/profile/${this.props.id}`
+        window.location.href = `/doggos/profile/${this.props.id}`;
     }
 
     render() {
         return <Profile onClick={this.viewProfile}>View Profile</Profile>
     }
-}
+};
 
 class UpdateDoggo extends Component {
     updateProfile = e => {
         e.preventDefault();
 
-        window.location.href = `/doggos/update/${this.props.id}`
+        window.location.href = `/doggos/update/${this.props.id}`;
     }
 
     render() {
         return <Update onClick={this.updateProfile}>Update</Update>
     }
-}
+};
 
 class DeleteDoggo extends Component {
     deleteProfile = e => {
@@ -71,15 +71,16 @@ class DeleteDoggo extends Component {
     render = () => {
         return <Delete onClick={this.deleteProfile}>Delete</Delete>
     }
-}
+};
 
 class DoggoProfiles extends Component {
     constructor(props) {
         super(props)
         this.state = {
             profiles: [],
+            isLoading: false,
             columns: []
-        }
+        };
     }
 
     componentDidMount = async () => {
@@ -91,7 +92,7 @@ class DoggoProfiles extends Component {
                 isLoading: false,
             });
         })
-    }
+    };
 
     render() {
         const { profiles } = this.state;

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import api from '../api';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Select from 'react-select';
-//import makeAnimated from 'react-select/animated'; //broken in npm package update for react-select
+import makeAnimated from 'react-select/animated';
 import InfiniteCalendar from 'react-infinite-calendar';
 import 'react-infinite-calendar/styles.css';
 import Modal from 'react-modal';
@@ -12,8 +12,16 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import colorSelect from '../resources/resources';
 import {FaBirthdayCake} from 'react-icons/fa';
+import {FiUpload} from 'react-icons/fi';
+import Dropzone from 'react-dropzone';
+import axios from 'axios';
+import config from '../config/config';
+   
+Modal.setAppElement('#root'); 
+const animatedComponents = makeAnimated();
+const maxSize = 5242880; //5MB max image size for profile picture
 
-const customStyles = {
+const birthdayStyle = {
     content : {
       top                   : '50%',
       left                  : '50%',
@@ -23,9 +31,6 @@ const customStyles = {
       transform             : 'translate(-50%, -50%)'
     }
   };
-   
-  Modal.setAppElement('#root'); 
-  //const animatedComponents = makeAnimated(); //broken in npm package update for react-select
 
 const Title = styled.h1.attrs({
     className: 'h1',
@@ -58,10 +63,40 @@ const Button = styled.button.attrs({
     margin: 15px 15px 15px 5px;
 `;
 
+const BirthdayButton = styled.button.attrs({
+    className: `btn btn-outline-primary btn-sm`,
+})`
+    margin: 15px 15px 15px 5px;
+`;
+
 const DeleteButton = styled.button.attrs({
     className: `btn btn-danger`,
 })`
     margin: 15px 15px 15px 5px;    
+`;
+
+const RemoveImgButton = styled.a.attrs({  
+    className: `btn btn-outline-warning btn-sm`,
+})`
+    margin: 15px 15px 15px 5px;
+`;
+
+const Image = styled.img`    
+    max-width: 350px;
+    max-height: 350px;
+    width: auto;
+    height: auto;
+    text-align: center !important;
+`;
+
+const DropZoneContainer = styled.div`
+    height: 200px;
+    border: 2px dashed #2c67d8;
+    padding: 30px;
+
+    ${props => (props.isDragActive) && css`
+        border-color: green;
+    `};
 `;
 
 class DoggoUpdate extends Component {
@@ -77,9 +112,55 @@ class DoggoUpdate extends Component {
             weight: '',
             birthday: '',
             smellRating: '',
-            modalIsOpen: false
+            modalIsOpen: false,
+            profilePicture: null,
+            fileName: '',
+            profilePicUrl: ''
         };
     }
+
+    imageDropContainer = () => {       
+        return (
+            <React.Fragment>
+                <div>
+                    <Label>Upload Profile Picture: </Label> <br />
+                    <Dropzone
+                    name={'profilePicture'}
+                    onDrop={this.handleOnDrop}
+                    accept='image/*'
+                    minSize={0}
+                    maxSize={maxSize}
+                    style={{}}                        
+                    >
+                    {({
+                        getRootProps,
+                        getInputProps,
+                        isDragActive,
+                        isDragReject,
+                        rejectedFiles
+                    }) => {
+                        const isFileTooLarge =
+                        rejectedFiles.length > 0 && rejectedFiles[0].size > maxSize;
+                        return (
+                        <DropZoneContainer {...getRootProps()}>
+                        <h1><FiUpload /></h1>
+                            <input {...getInputProps()} />
+                            {isDragActive
+                            ? ' Drop it when it\'s hot! '
+                            : ' Drag an image file or click anywhere in the box to upload! '}
+                            {isDragActive && !isDragReject && ' Drop it like it\'s hot! '}
+                            {isDragReject && ' File type not accepted, sorry! '}
+                            {isFileTooLarge && (
+                            <div>File is too large, 5MB max file size.</div>
+                            )}
+                        </DropZoneContainer>
+                        );
+                    }}
+                    </Dropzone>                    
+                </div>
+            </React.Fragment>           
+        );
+    };
 
     handleNameChange = async e => {
         const name = e.target.value;
@@ -102,10 +183,6 @@ class DoggoUpdate extends Component {
     };
 
     handleAgeChange = async e => {
-        // const age = e.target.value.validity.valid
-        // ? e.target.value
-        // : this.state.age;
-        // this.setState({ age });
         const age = e.target.value;
         this.setState({ age });
     };
@@ -116,36 +193,44 @@ class DoggoUpdate extends Component {
     };
 
     handleBirthdayChange = (date) => {
-        const birthday = date;        
-        console.log(birthday);
+        const birthday = date;
         this.setState({ birthday: birthday });
     };
 
-    openModal = () => {
+    handleOpenModal = () => {
         this.setState({modalIsOpen: true});
       };
      
-      afterOpenModal = () => {
+    handleAfterOpenModal = () => {
         this.subtitle.style.color = '#f00';
       };
      
-      closeModal = () => {
+    handleCloseModal = () => {
         this.setState({modalIsOpen: false});
       };
 
-      toggleBirthdayVisibility() {
-        this.setState({
-          visible: !this.state.visible,
-        });
-      };
-
-    handleSmellratingChange = async e => {
-        // const smellRating = e.target.value.validity.valid
-        // ? e.target.value
-        // : this.state.age;
-        // this.setState({ smellRating });
+    handleSmellratingChange = async e => {        
         const smellRating = e.target.value;
         this.setState({ smellRating });
+    };
+
+    handleOnDrop = async e => {
+        const profilePicture = e;
+        const profilePicPreview = e[0];
+        if (profilePicture.length > 0) {
+            this.setState({ 
+                profilePicture, 
+                profilePicUrl: URL.createObjectURL(profilePicPreview) 
+            });
+        };        
+      };
+
+      handleRemoveImage = () => {        
+        const fileName = '';
+        this.setState({ 
+            profilePicUrl: '',
+            fileName 
+        });
     };
 
     handleDeleteDoggo = async e => {
@@ -158,22 +243,29 @@ class DoggoUpdate extends Component {
         ) {
             api.deleteDoggoById(this.state.id);
             this.props.history.push('/');
-            window.location.reload();//force reload profile table entities
-        }
+            window.location.reload();//force reload profiles
+        };
     };
         
     componentDidMount = async () => {
         const { id } = this.state;
         const doggo = await api.getDoggoById(id);
+        const fileName = doggo.data.data.fileName;
+        var profilePicPath = '';
+
+        if (fileName == null || fileName.length === 0){
+            //will show image upload container if no filename on component mount
+            profilePicPath = '';
+        } else {
+            profilePicPath = config.profilePicDir + fileName;
+        }; 
 
         //Prepare Color Array for React-Select dropdown
         var colArray = doggo.data.data.color;
-        console.log(colArray);
         var colorArray = colArray.map(c => ({
             value: c,
             label: c
-        }));
-          console.log(colorArray);        
+        }));       
 
         this.setState({
             name: doggo.data.data.name,           
@@ -182,39 +274,69 @@ class DoggoUpdate extends Component {
             age: doggo.data.data.age,
             weight: doggo.data.data.weight,
             birthday: doggo.data.data.birthday,
-            smellRating: doggo.data.data.smellRating
-        });        
+            smellRating: doggo.data.data.smellRating,
+            fileName: fileName,
+            profilePicUrl: profilePicPath
+        });     
     };
 
-    handleUpdateDoggo = async () => {        
-        const { id, name, breed, color, age, weight, birthday, smellRating } = this.state; 
+    handleUpdateDoggo = async () => {
+        //post profile picture, return filename
+        if (this.state.profilePicture !== null) {
+            const data = new FormData();
+            const file = this.state.profilePicture[0];            
+
+            data.append('profilePicture', file);
+
+            await axios({
+            method: 'post',
+            url: `${config.profilePicApi}`,
+            data: data,
+            config: { headers: { 'Content-Type': 'multipart/form-data' } }
+            }).then(response => {
+                console.log('returned filename: ' + response.data.filename);
+                console.log(response.data);
+                this.setState({fileName: response.data.filename});
+            });
+        }
+        
+        const { 
+            id, 
+            name, 
+            breed, 
+            color, 
+            age, 
+            weight, 
+            birthday, 
+            smellRating, 
+            fileName 
+        } = this.state;
 
         var colorArray = [];
         colorArray = color.map(c => c.value);
-        console.log('Color Array for Update: ' + colorArray);
 
-        const payload = { id, name, breed, color: colorArray, age, weight, birthday, smellRating };
+        const payload = { 
+            id, 
+            name, 
+            breed, 
+            color: colorArray, 
+            age, 
+            weight, 
+            birthday, 
+            smellRating,
+            fileName
+         };
 
         console.log('payload: ' + payload);
 
         await api.updateDoggoById(id, payload).then(res => {
-            window.alert(`Doggo updated successfully`)
-            this.setState({
-                id: this.props.match.params.id,
-                name: '',
-                breed: '',
-                color: [],
-                age: '',
-                weight: '',
-                birthday: '',
-                smellRating: ''
-            });
-            this.componentDidMount();
+            window.alert(`Doggo updated successfully`)      
+            this.props.history.push('/');
         });
     };
 
     render() {
-        const { name, breed, color, age, weight, birthday, smellRating } = this.state;
+        const { name, breed, color, age, weight, birthday, smellRating } = this.state;        
         const bday = this.state.birthday === '' || this.state.birthday === null 
         ? 'No Birthday Entered' 
         : <Moment format="MM/DD/YYYY">{birthday}</Moment>;
@@ -246,7 +368,7 @@ class DoggoUpdate extends Component {
                             <Label>Color: </Label>
                             <Select  
                             isMulti
-                            //components={animatedComponents}//broken in npm package update for react-select                                         
+                            components={animatedComponents}                              
                             options={colorSelect}
                             value={color || ''}                            
                             onChange={this.handleColorChange}
@@ -297,18 +419,18 @@ class DoggoUpdate extends Component {
                     <Label>Birthday: {bday}</Label>                                   
                     <br />
                     <div>
-                        <Button onClick={this.openModal}>
+                        <BirthdayButton onClick={this.handleOpenModal}>
                             <FaBirthdayCake /> Show Birthday Calendar
-                        </Button>
+                        </BirthdayButton>
                         <Modal
                         isOpen={this.state.modalIsOpen}
-                        onAfterOpen={this.afterOpenModal}
-                        onRequestClose={this.closeModal}
-                        style={customStyles}
-                        contentLabel="Example Modal"
+                        onAfterOpen={this.handleAfterOpenModal}
+                        onRequestClose={this.handleCloseModal}
+                        style={birthdayStyle}
+                        contentLabel="Birthday Modal"
                         >            
                         <h2 ref={subtitle => this.subtitle = subtitle}> </h2>
-                        <Button onClick={this.closeModal}>Save and Close</Button>
+                        <BirthdayButton onClick={this.handleCloseModal}>Save and Close</BirthdayButton>
                         <InfiniteCalendar
                             width={400}
                             height={300} 
@@ -320,6 +442,20 @@ class DoggoUpdate extends Component {
                             } />
                         </Modal>
                     </div>
+                    <br />                    
+                    {this.state.profilePicUrl != null 
+                        ? this.state.profilePicUrl.length > 0 
+                        ? <div>
+                            <div>
+                                <Label>Profile Picture Preview: </Label><br />
+                                <Image src={this.state.profilePicUrl} alt='profile' />
+                            </div>
+                            <RemoveImgButton onClick={this.handleRemoveImage}>Remove Image</RemoveImgButton>
+                          </div> 
+                        : <this.imageDropContainer />
+                        : <this.imageDropContainer />}
+                    <br />
+
                     <Button onClick={this.handleUpdateDoggo}>Update Doggo Profile</Button>
                     <DeleteButton onClick={this.handleDeleteDoggo}>Delete Doggo Profile</DeleteButton>                    
                 </Wrapper>

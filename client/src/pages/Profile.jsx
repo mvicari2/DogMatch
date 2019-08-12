@@ -6,6 +6,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import {FaBirthdayCake} from 'react-icons/fa';
+import config from '../config/config';
 
 const Title = styled.h1.attrs({
     className: 'h1',
@@ -28,6 +29,14 @@ const Label = styled.h5`
     text-decoration: underline;
 `;
 
+const Image = styled.img`    
+    max-width: 350px;
+    max-height: 350px;
+    width: auto;
+    height: auto;
+    text-align: center !important;
+`;
+
 const Button = styled.button.attrs({
     className: `btn btn-primary`,
 })`
@@ -44,13 +53,13 @@ class UpdateDoggo extends Component {
     updateProfile = e => {
         e.preventDefault();
 
-        window.location.href = `/doggos/update/${this.props.id}`
+        window.location.href = `/doggos/update/${this.props.id}`;
     }
 
     render() {
         return <Button onClick={this.updateProfile}>Update {this.props.name}'s Profile </Button>
     }
-}
+};
 
 class Profile extends Component {
     constructor(props) {
@@ -64,7 +73,8 @@ class Profile extends Component {
             age: '',
             weight: '',
             birthday: '',
-            smellRating: ''
+            smellRating: '',
+            profilePicUrl: ''
         };
     }   
 
@@ -78,13 +88,22 @@ class Profile extends Component {
         ) {
             api.deleteDoggoById(this.state.id);
             this.props.history.push('/');
-            window.location.reload();//force reload profile table entities
+            window.location.reload();//force reload profiles
         }
     };
         
     componentDidMount = async () => {
         const { id } = this.state;
-        const doggo = await api.getDoggoById(id);      
+        const doggo = await api.getDoggoById(id);
+        const fileName = doggo.data.data.fileName;
+        var profilePicPath = '';
+
+        if (fileName == null || fileName.length === 0){
+            //set default profile picture from resources folder if none has been uploaded
+            profilePicPath = '';
+        } else {
+            profilePicPath = config.profilePicDir + fileName;
+        };
 
         this.setState({
             name: doggo.data.data.name,           
@@ -93,8 +112,9 @@ class Profile extends Component {
             age: doggo.data.data.age,
             weight: doggo.data.data.weight,
             birthday: doggo.data.data.birthday,
-            smellRating: doggo.data.data.smellRating
-        });        
+            smellRating: doggo.data.data.smellRating,
+            profilePicUrl: profilePicPath
+        });
     };
 
 
@@ -139,6 +159,18 @@ class Profile extends Component {
                     </Row>
                     <Label>Birthday <FaBirthdayCake />: </Label> {bday}                                    
                     <br />
+
+                    {this.state.profilePicUrl != null 
+                        ? this.state.profilePicUrl.length > 0 
+                        ? <div>
+                            <div>
+                                <Image src={this.state.profilePicUrl} alt='profile' />
+                            </div>
+                          </div> 
+                        : <Image src={require(`../../src/resources/default.jpg`) } alt='' /> 
+                        : <Image src={require(`../../src/resources/default.jpg`) } alt='' />}
+                    <br />
+
                     <UpdateDoggo id={this.state.id} name={this.state.name} />
                     <DeleteButton onClick={this.handleDeleteDoggo}>Delete Profile</DeleteButton>                    
                 </Wrapper>

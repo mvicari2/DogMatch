@@ -9,7 +9,8 @@ const Dog = new Schema(
         age: { type: Number, required: true },
         weight: { type: Number, Required: true },
         birthday: { type: Date, required: false },
-        smellRating: { type: Number, required: false }
+        smellRating: { type: Number, required: false },
+        fileName: { type: String, required: false }
     },
     { timestamps: true }
 );

@@ -9,6 +9,9 @@ server/data/db/*
 #Build directory
 build/
 
+#File Upload directory
+uploads/
+
 #jshint config
 .jshintrc
 
