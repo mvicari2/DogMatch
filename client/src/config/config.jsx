@@ -1,19 +1,26 @@
-//Set server
+// set server
 const server = 'http://localhost:3000';
 
-//set api url
+// set api url
 const api = server + '/api';
 
-//set profile pic directory
+// set profile pic directory
 const profilePicDir = server + '/uploads/profile/';
 
-//upload profile pic api url
-const profilePicApi = 'http://localhost:3000/api/UploadProfilePicture';
+// set profile pic directory
+const albumPicDir = server + '/uploads/album/';
+
+// upload profile pic api url
+const profilePicApi = 'http://localhost:3000/api/uploadProfilePicture';
+
+const albumApi = 'http://localhost:3000/api/uploadAlbum'
 
 const config = {
     api,
     profilePicDir,
-    profilePicApi
+    profilePicApi,
+    albumPicDir,
+    albumApi
 
 };
 

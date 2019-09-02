@@ -7,6 +7,9 @@ const router = express.Router();
 
 router.post('/dog', DogController.createDog);
 router.put('/dog/:id', DogController.updateDog);
+router.put('/dog/temperament/:id', DogController.updateTemperament);
+router.put('/dog/biography/:id', DogController.updateBiography);
+router.put('/dog/album/:id', DogController.updateAlbumFileNames);
 router.delete('/dog/:id', DogController.deleteDog);
 router.get('/dog/:id', DogController.getDogById);
 router.get('/dog', DogController.getDogs);
@@ -20,32 +23,42 @@ var profilePicStorage = multer.diskStorage({
   }
 });
 
-var profilePicUpload = multer({ storage: profilePicStorage });
-
-//Upload Profile Picture (single)
-router.post('/uploadProfilePicture', profilePicUpload.single('profilePicture') ,function (req, res, next) {
-    const file = req.file;
-
-    if (!file) {
-        const error = new Error('Please upload a picture');
-        error.httpStatusCode = 400;
-        return next(error);
-    }
-    res.send(file);    
+var albumStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './data/uploads/album');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
 });
 
-//Future Enhancement: Upload Multiple Pictures (dogAlbum)
-// router.post('/uploadDogAlbum', upload.array('dogAlbum', 12), (req, res, next) => {
-//   const files = req.files;
+var profilePicUpload = multer({ storage: profilePicStorage });
+var albumUpload = multer({ storage: albumStorage });
 
-//   if (!files) {
-//     const error = new Error('Please choose files');
-//     error.httpStatusCode = 400;
-//     return next(error);
-//   }
+// Upload Profile Picture (single)
+router.post('/uploadProfilePicture', profilePicUpload.single('profilePicture'), function (req, res, next) {
+  const file = req.file;
 
-//     res.send(files);
- 
-// });
+  if (!file) {
+    const error = new Error('Please upload a picture');
+    error.httpStatusCode = 400;
+    return next(error);
+  };
+  res.send(file);
+});
+
+// Upload Multiple Pictures (array)
+router.post('/uploadAlbum', albumUpload.array('albumFiles', 12), (req, res, next) => {
+  const files = req.files;
+
+  if (!files) {
+    const error = new Error('Please choose files');
+    error.httpStatusCode = 400;
+    return next(error);
+  };
+
+  res.send(files);
+
+});
 
 module.exports = router;

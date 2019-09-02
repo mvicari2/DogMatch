@@ -31,7 +31,6 @@ const Nav = styled.nav.attrs({
 
 class NavBar extends Component {
     render() {
-        // jshint ignore:start
         return (
             <Container>
                 <Nav>
@@ -40,8 +39,7 @@ class NavBar extends Component {
                 </Nav>
             </Container>
         )
-        // jshint ignore:end
-    }
-}
+    };
+};
 
 export default NavBar;

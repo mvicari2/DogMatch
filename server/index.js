@@ -20,10 +20,10 @@ app.get('/', (req, res) => {
 
 app.use('/api', dogRouter);
 
-//for serving profile pictures
+// for serving profile pictures
 app.use('/uploads/profile', express.static(__dirname + '/data/uploads/profile'));
 
-//for serving album images
+// for serving album images
 app.use('/uploads/album', express.static(__dirname + '/data/uploads/album'));
 
 app.listen(apiPort, () => console.log(`Server running on port ${apiPort}`));

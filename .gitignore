@@ -12,9 +12,6 @@ build/
 #File Upload directory
 uploads/
 
-#jshint config
-.jshintrc
-
 # Logs
 logs
 *.log

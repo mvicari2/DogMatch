@@ -10,27 +10,31 @@ import Moment from 'react-moment';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import colorSelect from '../resources/resources';
-import {FaBirthdayCake} from 'react-icons/fa';
-import {FiUpload} from 'react-icons/fi';
+import resources from '../resources/resources';
+import { FaBirthdayCake } from 'react-icons/fa';
+import { FiUpload } from 'react-icons/fi';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
 import config from '../config/config';
-   
-Modal.setAppElement('#root'); 
+import { Footer } from '../components';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+
+Modal.setAppElement('#root');
 const animatedComponents = makeAnimated();
-const maxSize = 5242880; //5MB max image size for profile picture
+const maxSize = 5242880; // 5MB max image size for profile picture
 
 const birthdayStyle = {
-    content : {
-      top                   : '50%',
-      left                  : '50%',
-      right                 : 'auto',
-      bottom                : 'auto',
-      marginRight           : '-50%',
-      transform             : 'translate(-50%, -50%)'
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)'
     }
-  };
+};
 
 const Title = styled.h1.attrs({
     className: 'h1',
@@ -75,7 +79,7 @@ const DeleteButton = styled.button.attrs({
     margin: 15px 15px 15px 5px;    
 `;
 
-const RemoveImgButton = styled.a.attrs({  
+const RemoveImgButton = styled.a.attrs({
     className: `btn btn-outline-warning btn-sm`,
 })`
     margin: 15px 15px 15px 5px;
@@ -87,6 +91,13 @@ const Image = styled.img`
     width: auto;
     height: auto;
     text-align: center !important;
+`;
+
+const Radios = styled.div`
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 `;
 
 const DropZoneContainer = styled.div`
@@ -111,54 +122,54 @@ class DoggoUpdate extends Component {
             age: '',
             weight: '',
             birthday: '',
-            smellRating: '',
+            gender: '',
             modalIsOpen: false,
             profilePicture: null,
             fileName: '',
             profilePicUrl: ''
         };
-    }
+    };
 
-    imageDropContainer = () => {       
+    imageDropContainer = () => {
         return (
             <React.Fragment>
                 <div>
                     <Label>Upload Profile Picture: </Label> <br />
                     <Dropzone
-                    name={'profilePicture'}
-                    onDrop={this.handleOnDrop}
-                    accept='image/*'
-                    minSize={0}
-                    maxSize={maxSize}
-                    style={{}}                        
+                        name={'profilePicture'}
+                        onDrop={this.handleOnDrop}
+                        accept='image/*'
+                        minSize={0}
+                        maxSize={maxSize}
+                        style={{}}
                     >
-                    {({
-                        getRootProps,
-                        getInputProps,
-                        isDragActive,
-                        isDragReject,
-                        rejectedFiles
-                    }) => {
-                        const isFileTooLarge =
-                        rejectedFiles.length > 0 && rejectedFiles[0].size > maxSize;
-                        return (
-                        <DropZoneContainer {...getRootProps()}>
-                        <h1><FiUpload /></h1>
-                            <input {...getInputProps()} />
-                            {isDragActive
-                            ? ' Drop it when it\'s hot! '
-                            : ' Drag an image file or click anywhere in the box to upload! '}
-                            {isDragActive && !isDragReject && ' Drop it like it\'s hot! '}
-                            {isDragReject && ' File type not accepted, sorry! '}
-                            {isFileTooLarge && (
-                            <div>File is too large, 5MB max file size.</div>
-                            )}
-                        </DropZoneContainer>
-                        );
-                    }}
-                    </Dropzone>                    
+                        {({
+                            getRootProps,
+                            getInputProps,
+                            isDragActive,
+                            isDragReject,
+                            rejectedFiles
+                        }) => {
+                            const isFileTooLarge =
+                                rejectedFiles.length > 0 && rejectedFiles[0].size > maxSize;
+                            return (
+                                <DropZoneContainer {...getRootProps()}>
+                                    <h1><FiUpload /></h1>
+                                    <input {...getInputProps()} />
+                                    {isDragActive
+                                        ? ' Drop it when it\'s hot! '
+                                        : ' Drag an image file or click anywhere in the box to upload! '}
+                                    {isDragActive && !isDragReject && ' Drop it like it\'s hot! '}
+                                    {isDragReject && ' File type not accepted, sorry! '}
+                                    {isFileTooLarge && (
+                                        <div>File is too large, 5MB max file size.</div>
+                                    )}
+                                </DropZoneContainer>
+                            );
+                        }}
+                    </Dropzone>
                 </div>
-            </React.Fragment>           
+            </React.Fragment>
         );
     };
 
@@ -179,7 +190,6 @@ class DoggoUpdate extends Component {
             colorState.color.push(option.value);
         });
         this.setState({ color: color });
-        console.log(`Options selected:`, JSON.stringify(colorState, null, 4));
     };
 
     handleAgeChange = async e => {
@@ -198,270 +208,291 @@ class DoggoUpdate extends Component {
     };
 
     handleOpenModal = () => {
-        this.setState({modalIsOpen: true});
-      };
-     
+        this.setState({ modalIsOpen: true });
+    };
+
     handleAfterOpenModal = () => {
         this.subtitle.style.color = '#f00';
-      };
-     
-    handleCloseModal = () => {
-        this.setState({modalIsOpen: false});
-      };
+    };
 
-    handleSmellratingChange = async e => {        
-        const smellRating = e.target.value;
-        this.setState({ smellRating });
+    handleCloseModal = () => {
+        this.setState({ modalIsOpen: false });
+    };
+
+    handleGenderChange = async e => {
+        const gender = e.target.value;
+        this.setState({ gender });
     };
 
     handleOnDrop = async e => {
         const profilePicture = e;
         const profilePicPreview = e[0];
         if (profilePicture.length > 0) {
-            this.setState({ 
-                profilePicture, 
-                profilePicUrl: URL.createObjectURL(profilePicPreview) 
+            await this.setState({
+                profilePicture,
+                profilePicUrl: URL.createObjectURL(profilePicPreview)
             });
-        };        
-      };
+        };
+    };
 
-      handleRemoveImage = () => {        
+    handleRemoveImage = () => {
         const fileName = '';
-        this.setState({ 
+        this.setState({
             profilePicUrl: '',
-            fileName 
+            fileName
         });
+    };
+
+    handleTemperamentUpdate = async () => {
+        this.props.history.push(`/doggos/temperament/${this.state.id}`);
+    };
+
+    handleBiographyUpdate = async () => {
+        this.props.history.push(`/doggos/biography/${this.state.id}`);
     };
 
     handleDeleteDoggo = async e => {
         e.preventDefault();
-    
+
         if (
             window.confirm(
-                `Are you sure you want to delete doggo "${this.state.name}" permanently?`,
+                `Are you sure you want to delete doggo '${this.state.name}' permanently?`,
             )
         ) {
             api.deleteDoggoById(this.state.id);
             this.props.history.push('/');
-            window.location.reload();//force reload profiles
+            window.location.reload();// force reload profiles
         };
     };
-        
+
     componentDidMount = async () => {
         const { id } = this.state;
         const doggo = await api.getDoggoById(id);
         const fileName = doggo.data.data.fileName;
         var profilePicPath = '';
 
-        if (fileName == null || fileName.length === 0){
-            //will show image upload container if no filename on component mount
+        if (fileName == null || fileName.length === 0) {
+            // will show image upload container if no filename on component mount
             profilePicPath = '';
         } else {
             profilePicPath = config.profilePicDir + fileName;
-        }; 
+        };
 
-        //Prepare Color Array for React-Select dropdown
+        // Prepare Color Array for React-Select dropdown
         var colArray = doggo.data.data.color;
         var colorArray = colArray.map(c => ({
             value: c,
             label: c
-        }));       
+        }));
 
         this.setState({
-            name: doggo.data.data.name,           
+            name: doggo.data.data.name,
             breed: doggo.data.data.breed,
             color: colorArray,
             age: doggo.data.data.age,
             weight: doggo.data.data.weight,
             birthday: doggo.data.data.birthday,
-            smellRating: doggo.data.data.smellRating,
+            gender: doggo.data.data.gender,
             fileName: fileName,
             profilePicUrl: profilePicPath
-        });     
+        });
     };
 
     handleUpdateDoggo = async () => {
-        //post profile picture, return filename
+        // post profile picture, return filename
         if (this.state.profilePicture !== null) {
             const data = new FormData();
-            const file = this.state.profilePicture[0];            
+            const file = this.state.profilePicture[0];
 
             data.append('profilePicture', file);
 
             await axios({
-            method: 'post',
-            url: `${config.profilePicApi}`,
-            data: data,
-            config: { headers: { 'Content-Type': 'multipart/form-data' } }
+                method: 'post',
+                url: `${config.profilePicApi}`,
+                data: data,
+                config: { headers: { 'Content-Type': 'multipart/form-data' } }
             }).then(response => {
-                console.log('returned filename: ' + response.data.filename);
-                console.log(response.data);
-                this.setState({fileName: response.data.filename});
+                this.setState({ fileName: response.data.filename });
             });
-        }
-        
-        const { 
-            id, 
-            name, 
-            breed, 
-            color, 
-            age, 
-            weight, 
-            birthday, 
-            smellRating, 
-            fileName 
+        };
+
+        const {
+            id,
+            name,
+            breed,
+            color,
+            age,
+            weight,
+            birthday,
+            gender,
+            fileName
         } = this.state;
 
         var colorArray = [];
         colorArray = color.map(c => c.value);
 
-        const payload = { 
-            id, 
-            name, 
-            breed, 
-            color: colorArray, 
-            age, 
-            weight, 
-            birthday, 
-            smellRating,
+        const payload = {
+            id,
+            name,
+            breed,
+            color: colorArray,
+            age,
+            weight,
+            birthday,
+            gender,
             fileName
-         };
-
-        console.log('payload: ' + payload);
+        };
 
         await api.updateDoggoById(id, payload).then(res => {
-            window.alert(`Doggo updated successfully`)      
+            window.alert(`Doggo updated successfully`);
             this.props.history.push('/');
         });
     };
 
     render() {
-        const { name, breed, color, age, weight, birthday, smellRating } = this.state;        
-        const bday = this.state.birthday === '' || this.state.birthday === null 
-        ? 'No Birthday Entered' 
-        : <Moment format="MM/DD/YYYY">{birthday}</Moment>;
+        const { name, breed, color, age, weight, birthday, gender } = this.state;
+        const bday = this.state.birthday === '' || this.state.birthday === null
+            ? 'No Birthday Entered'
+            : <Moment format='MM/DD/YYYY'>{birthday}</Moment>;
 
         return (
             <Container>
                 <Title>Update {name}'s Profile</Title>
                 <Wrapper>
                     <Row>
-                        <Col>
+                        <Col sm={true}>
                             <Label>Name: </Label>
                             <InputText
-                            type="text"
-                            value={name}
-                            onChange={this.handleNameChange}
+                                type='text'
+                                value={name}
+                                onChange={this.handleNameChange}
                             />
                         </Col>
-                        <Col>
+                        <Col sm={true}>
                             <Label>Breed: </Label>
                             <InputText
-                            type="text"
-                            value={breed}
-                            onChange={this.handleBreedChange}
+                                type='text'
+                                value={breed}
+                                onChange={this.handleBreedChange}
                             />
                         </Col>
                     </Row>
                     <Row>
-                        <Col sm>
+                        <Col sm={true}>
                             <Label>Color: </Label>
-                            <Select  
-                            isMulti
-                            components={animatedComponents}                              
-                            options={colorSelect}
-                            value={color || ''}                            
-                            onChange={this.handleColorChange}
-                            /> 
+                            <Select
+                                isMulti
+                                components={animatedComponents}
+                                options={resources.colorSelect}
+                                value={color || ''}
+                                onChange={this.handleColorChange}
+                            />
                         </Col>
-                        <Col sm>
+                        <Col sm={true}>
                             <Label>Age: </Label>
                             <InputText
-                            type="number"
-                            step="0.1"
-                            lang="en-US"
-                            min="0"
-                            max="30"
-                            pattern="[0-9]+([,\.][0-9]+)?"
-                            value={age}
-                            onChange={this.handleAgeChange}
-                            />    
-                        </Col>                    
+                                type='number'
+                                step='0.1'
+                                lang='en-US'
+                                min='0'
+                                max='30'
+                                pattern='[0-9]+([,\.][0-9]+)?'
+                                value={age}
+                                onChange={this.handleAgeChange}
+                            />
+                        </Col>
                     </Row>
                     <Row>
-                        <Col>
+                        <Col sm={true}>
                             <Label>Weight: </Label>
                             <InputText
-                            type="number"
-                            step="0.1"
-                            lang="en-US"
-                            min="0"
-                            max="250"
-                            pattern="[0-9]+([,\.][0-9]+)?"
-                            value={weight}
-                            onChange={this.handleWeightChange}
+                                type='number'
+                                step='0.1'
+                                lang='en-US'
+                                min='0'
+                                max='250'
+                                pattern='[0-9]+([,\.][0-9]+)?'
+                                value={weight}
+                                onChange={this.handleWeightChange}
                             />
                         </Col>
-                        <Col>
-                            <Label>Smell Rating: </Label>
-                            <InputText
-                            type="number"
-                            step="0.1"
-                            lang="en-US"
-                            min="0"
-                            max="100"
-                            pattern="[0-9]+([,\.][0-9]+)?"
-                            value={smellRating}
-                            onChange={this.handleSmellratingChange}
-                            />
+                        <Col sm={true}>
+                            <Label>Gender: </Label>
+                            <RadioGroup
+                                name='genderRadio'
+                                value={gender}
+                                onChange={this.handleGenderChange}
+                                row
+                            >
+                                <Radios>
+                                    <FormControlLabel
+                                        value='female'
+                                        control={<Radio color='primary' />}
+                                        label='Good Girl'
+                                        labelPlacement='bottom'
+                                    />
+                                    <FormControlLabel
+                                        value='male'
+                                        control={<Radio color='primary' />}
+                                        label='Good Boy'
+                                        labelPlacement='bottom'
+                                    />
+                                </Radios>
+                            </RadioGroup>
                         </Col>
                     </Row>
-                    <Label>Birthday: {bday}</Label>                                   
+                    <Label>Birthday: {bday}</Label>
                     <br />
                     <div>
                         <BirthdayButton onClick={this.handleOpenModal}>
                             <FaBirthdayCake /> Show Birthday Calendar
                         </BirthdayButton>
                         <Modal
-                        isOpen={this.state.modalIsOpen}
-                        onAfterOpen={this.handleAfterOpenModal}
-                        onRequestClose={this.handleCloseModal}
-                        style={birthdayStyle}
-                        contentLabel="Birthday Modal"
-                        >            
-                        <h2 ref={subtitle => this.subtitle = subtitle}> </h2>
-                        <BirthdayButton onClick={this.handleCloseModal}>Save and Close</BirthdayButton>
-                        <InfiniteCalendar
-                            width={400}
-                            height={300} 
-                            display={'years'}
-                            value={birthday}
-                            selected={this.state.birthday || new Date()}
-                            onSelect={ date => {
-                                this.handleBirthdayChange(date)}
-                            } />
+                            isOpen={this.state.modalIsOpen}
+                            onAfterOpen={this.handleAfterOpenModal}
+                            onRequestClose={this.handleCloseModal}
+                            style={birthdayStyle}
+                            contentLabel='Birthday Modal'
+                        >
+                            <h2 ref={subtitle => this.subtitle = subtitle}> </h2>
+                            <BirthdayButton onClick={this.handleCloseModal}>Save and Close</BirthdayButton>
+                            <InfiniteCalendar
+                                width={400}
+                                height={300}
+                                display={'years'}
+                                value={birthday}
+                                selected={this.state.birthday || new Date()}
+                                onSelect={date => {
+                                    this.handleBirthdayChange(date)
+                                }
+                                } />
                         </Modal>
                     </div>
-                    <br />                    
-                    {this.state.profilePicUrl != null 
-                        ? this.state.profilePicUrl.length > 0 
-                        ? <div>
-                            <div>
-                                <Label>Profile Picture Preview: </Label><br />
-                                <Image src={this.state.profilePicUrl} alt='profile' />
+                    <br />
+                    {this.state.profilePicUrl != null
+                        ? this.state.profilePicUrl.length > 0
+                            ? <div>
+                                <div>
+                                    <Label>Profile Picture Preview: </Label><br />
+                                    <Image src={this.state.profilePicUrl} alt='profile' />
+                                </div>
+                                <RemoveImgButton onClick={this.handleRemoveImage}>Remove Image</RemoveImgButton>
                             </div>
-                            <RemoveImgButton onClick={this.handleRemoveImage}>Remove Image</RemoveImgButton>
-                          </div> 
-                        : <this.imageDropContainer />
+                            : <this.imageDropContainer />
                         : <this.imageDropContainer />}
                     <br />
 
-                    <Button onClick={this.handleUpdateDoggo}>Update Doggo Profile</Button>
-                    <DeleteButton onClick={this.handleDeleteDoggo}>Delete Doggo Profile</DeleteButton>                    
+                    <Button onClick={this.handleUpdateDoggo}>Save Updated Profile</Button>
+                    <br />
+                    <Button onClick={this.handleTemperamentUpdate}>Update Temperament Profile</Button>
+                    <Button onClick={this.handleBiographyUpdate}>Update Biography Profile</Button>
+                    <br />
+                    <DeleteButton onClick={this.handleDeleteDoggo}>Delete Doggo Profile</DeleteButton>
+                    <Footer />
                 </Wrapper>
             </Container>
-        )
-    }
-}
+        );
+    };
+};
 
 export default DoggoUpdate;

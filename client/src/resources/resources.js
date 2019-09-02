@@ -121,4 +121,8 @@ const colorSelect = [
     { value: 'Yellow', label: 'Yellow' }
   ];
 
-  export default colorSelect;
+  const resources = {
+    colorSelect
+};
+
+export default resources;

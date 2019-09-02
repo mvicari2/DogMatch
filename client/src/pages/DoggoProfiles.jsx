@@ -4,6 +4,7 @@ import api from '../api';
 import styled from 'styled-components';
 import 'react-table/react-table.css';
 import Moment from 'react-moment';
+import { Footer } from '../components';
 
 const Wrapper = styled.div`
     padding: 0 40px 40px 40px;
@@ -33,25 +34,23 @@ const Delete = styled.div`
 class ViewProfile extends Component {
         viewProfile = e => {
         e.preventDefault();
-
         window.location.href = `/doggos/profile/${this.props.id}`;
-    }
+    };
 
     render() {
         return <Profile onClick={this.viewProfile}>View Profile</Profile>
-    }
+    };
 };
 
 class UpdateDoggo extends Component {
     updateProfile = e => {
         e.preventDefault();
-
         window.location.href = `/doggos/update/${this.props.id}`;
-    }
+    };
 
     render() {
         return <Update onClick={this.updateProfile}>Update</Update>
-    }
+    };
 };
 
 class DeleteDoggo extends Component {
@@ -60,17 +59,17 @@ class DeleteDoggo extends Component {
 
         if (
             window.confirm(
-                `Are you sure you want to delete doggo "${this.props.name}" permanently?`,
+                `Are you sure you want to delete doggo '${this.props.name}' permanently?`,
             )
         ) {
             api.deleteDoggoById(this.props.id);
             window.location.reload();
-        }
-    }
+        };
+    };
 
     render = () => {
         return <Delete onClick={this.deleteProfile}>Delete</Delete>
-    }
+    };
 };
 
 class DoggoProfiles extends Component {
@@ -81,7 +80,7 @@ class DoggoProfiles extends Component {
             isLoading: false,
             columns: []
         };
-    }
+    };
 
     componentDidMount = async () => {
         this.setState({ isLoading: true });
@@ -127,11 +126,11 @@ class DoggoProfiles extends Component {
             {
                 Header: 'Birthday',
                 accessor: 'birthday',
-                Cell: props => <Moment format="MM/DD/YYYY">{props.value}</Moment>
+                Cell: props => <Moment format='MM/DD/YYYY'>{props.value}</Moment>
             },
             {
-                Header: 'Smell Rating',
-                accessor: 'smellRating'
+                Header: 'Gender',
+                accessor: 'gender'
             },
             {
                 Header: '',
@@ -174,17 +173,18 @@ class DoggoProfiles extends Component {
             <br />                
                 <ReactTable
                     data={profiles}
-                    noDataText="No Doggos Saved!"
+                    noDataText='No Doggos Saved!'
                     columns={columns}
-                    className="-striped -highlight"
+                    className='-striped -highlight'
                     //loading={isLoading} //might add again for larger data sets
                     defaultPageSize={50}
                     showPageSizeOptions={true}
                     minRows={5}
-                />                
+                />      
+                <Footer />          
             </Wrapper>
-        )
-    }
-}
+        );
+    };
+};
 
 export default DoggoProfiles;

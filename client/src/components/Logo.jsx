@@ -10,8 +10,8 @@ const Wrapper = styled.a.attrs({
 class Logo extends Component {
     render() {
         return (
-            <Wrapper href="#">
-                <img src={logo} width="40" height="40" alt="Doggo Dates" />
+            <Wrapper href='#'>
+                <img src={logo} width='40' height='40' alt='Doggo Dates' />
             </Wrapper>
         )
     }
