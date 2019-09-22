@@ -1,15 +1,15 @@
-import DoggosPost from './DoggosPost';
+import CreateDoggo from './CreateDoggo';
 import DoggoProfiles from './DoggoProfiles';
-import DoggoUpdate from './DoggoUpdate';
+import UpdateDoggo from './UpdateDoggo';
 import Profile from './Profile';
 import TemperamentProfile from './TemperamentProfile';
 import BiographyProfile from './BiographyProfile';
 import AlbumUpload from './AlbumUpload';
 
 export { 
-    DoggosPost, 
+    CreateDoggo, 
     DoggoProfiles, 
-    DoggoUpdate, 
+    UpdateDoggo, 
     Profile, 
     TemperamentProfile, 
     BiographyProfile,

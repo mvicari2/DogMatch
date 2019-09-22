@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import api from '../api';
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
-import { Footer } from '../components';
 
 const Title = styled.h1.attrs({
     className: 'h1',
@@ -90,21 +89,24 @@ class BiographyProfile extends Component {
     componentDidMount = async () => {
         const { id } = this.state;
         const doggo = await api.getDoggoById(id);
+        const name = doggo.data.data.name;
 
         // handle situations where no biography data has been posted yet (first time)
         if (doggo.data.data.biography === undefined) {
             this.setState({// if initial 
-                name: doggo.data.data.name
+                name
             });
         } else {// if updating 
+            const biography = doggo.data.data.biography;
+
             this.setState({
-                name: doggo.data.data.name,
-                aboutDoggo: doggo.data.data.biography.aboutDoggo,
-                favoriteMemory: doggo.data.data.biography.favoriteMemory,
-                favoriteFoods: doggo.data.data.biography.favoriteFoods,
-                favoriteToy: doggo.data.data.biography.favoriteToy,
-                favoriteSleepLocation: doggo.data.data.biography.favoriteSleepLocation,
-                favoriteWalkLocation: doggo.data.data.biography.favoriteWalkLocation,
+                name,
+                aboutDoggo: biography.aboutDoggo,
+                favoriteMemory: biography.favoriteMemory,
+                favoriteFoods: biography.favoriteFoods,
+                favoriteToy: biography.favoriteToy,
+                favoriteSleepLocation: biography.favoriteSleepLocation,
+                favoriteWalkLocation: biography.favoriteWalkLocation,
             });
         };
     };
@@ -131,7 +133,7 @@ class BiographyProfile extends Component {
         };
 
         await api.updateBiographyById(id, payload).then(res => {
-            this.props.history.push(`/doggos/album/${this.state.id}`);
+            this.props.history.push(`/doggos/album/${id}`);
         });
 
     };
@@ -196,7 +198,6 @@ class BiographyProfile extends Component {
                     <br />
                     <Button onClick={this.handleBackToTemperament}>Back to Temperament</Button>
                     <Button onClick={this.handlePostBiography}>Save Biography</Button>
-                    <Footer />
                 </Wrapper>
             </Container>
         );

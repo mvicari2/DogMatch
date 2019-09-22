@@ -21,7 +21,6 @@ const config = {
     profilePicApi,
     albumPicDir,
     albumApi
-
 };
 
 export default config;

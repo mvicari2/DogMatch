@@ -1,15 +1,15 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { NavBar } from '../components';
+import { NavBar, Footer } from '../components';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { 
     DoggoProfiles, 
-    DoggosPost, 
-    DoggoUpdate, 
+    CreateDoggo, 
+    UpdateDoggo, 
     Profile, 
     TemperamentProfile, 
     BiographyProfile,
-    AlbumUpload 
+    AlbumUpload,
 } from '../pages';
 
 function App() {
@@ -25,12 +25,12 @@ function App() {
                 <Route 
                     path='/doggos/create' 
                     exact 
-                    component={DoggosPost} 
+                    component={CreateDoggo} 
                 />
                 <Route
                     path='/doggos/update/:id'
                     exact
-                    component={DoggoUpdate}
+                    component={UpdateDoggo}
                 />
                 <Route 
                     path='/doggos/profile/:id' 
@@ -53,6 +53,7 @@ function App() {
                     component={AlbumUpload} 
                 />
             </Switch>
+            <Footer />
         </Router>
     );
 };

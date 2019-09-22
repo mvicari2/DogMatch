@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import ResponsiveMenu from 'react-responsive-navbar';
-import {IoIosArrowDown} from 'react-icons/io';
-import {IoMdClose} from 'react-icons/io';
+import {IoIosArrowDown, IoMdClose} from 'react-icons/io';
 
 const Collapse = styled.div.attrs({
     className: 'collpase navbar-collapse',
@@ -16,7 +15,6 @@ const List = styled.div.attrs({
 const Item = styled.div.attrs({
     className: 'collpase navbar-collapse',
 })``;
-
 
 class Links extends Component {
     render() {
@@ -50,8 +48,8 @@ class Links extends Component {
                         }
                 />               
             </React.Fragment>
-        )
-    }
+        );
+    };
 };
 
 export default Links;

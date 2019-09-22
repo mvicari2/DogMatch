@@ -38,7 +38,7 @@ class NavBar extends Component {
                     <Links />
                 </Nav>
             </Container>
-        )
+        );
     };
 };
 

@@ -4,7 +4,6 @@ import api from '../api';
 import styled from 'styled-components';
 import 'react-table/react-table.css';
 import Moment from 'react-moment';
-import { Footer } from '../components';
 
 const Wrapper = styled.div`
     padding: 0 40px 40px 40px;
@@ -180,8 +179,7 @@ class DoggoProfiles extends Component {
                     defaultPageSize={50}
                     showPageSizeOptions={true}
                     minRows={5}
-                />      
-                <Footer />          
+                />           
             </Wrapper>
         );
     };

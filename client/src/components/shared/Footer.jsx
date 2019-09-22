@@ -28,7 +28,7 @@ class Footer extends Component {
                 <div>
                     <div style={block} />
                     <div style={footerStyle}>
-                        Doggo Match v1.0.3 - Created by Ruby Rose Inc. &#169; 2019
+                        Doggo Match v0.5 - Created for Doggos &#169; 2019
                     </div>
                 </div>  
             </React.Fragment>

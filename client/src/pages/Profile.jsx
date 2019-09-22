@@ -9,32 +9,16 @@ import Image from 'react-bootstrap/Image'
 import Table from 'react-bootstrap/Table'
 import { FaBirthdayCake } from 'react-icons/fa';
 import config from '../config/config';
-import { Footer } from '../components';
-import { makeStyles } from '@material-ui/core/styles';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
+import Modal from 'react-modal';
+import {
+    ProfileGraph,
+    BiographySection,
+    ProfileAlbum,
+    DeleteProfile,
+    UpdateProfile
+} from '../components';
 
-const albumStyles = makeStyles(theme => ({
-    root: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-        overflow: 'hidden',
-        backgroundColor: theme.palette.background.paper,
-    },
-    gridList: {
-        flexWrap: 'nowrap',
-        // Promote the list into it's own layer on Chrome. This cost memory but helps keeping high FPS.
-        transform: 'translateZ(0)',
-    },
-    title: {
-        color: theme.palette.primary.light,
-    },
-    titleBar: {
-        background:
-            'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
-    },
-}));
+Modal.setAppElement('#root');
 
 const Title = styled.h1.attrs({
     className: 'h3',
@@ -51,15 +35,9 @@ const Wrapper = styled.div.attrs({
     text-align: center;
 `;
 
-const Label = styled.h5`
-    margin: 5px;
-    color: #616b61;
-    text-align: center;
-`;
-
 const ImageContainer = styled.div`    
     max-width: 450px;
-    max-height: 450px;
+    max-height: 90vh;
     width: auto;
     height: auto;
     text-align: center !important;
@@ -70,30 +48,6 @@ const ColContainer = styled.div`
     height: auto;
     text-align: center !important;
 `;
-
-const Button = styled.button.attrs({
-    className: `btn btn-primary`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
-
-const DeleteButton = styled.button.attrs({
-    className: `btn btn-danger`,
-})`
-    margin: 15px 15px 15px 5px;    
-`;
-
-class UpdateDoggo extends Component {
-    updateProfile = e => {
-        e.preventDefault();
-
-        window.location.href = `/doggos/update/${this.props.id}`;
-    }
-
-    render() {
-        return <Button onClick={this.updateProfile}>Update {this.props.name}'s Profile </Button>
-    }
-};
 
 class Profile extends Component {
     constructor(props) {
@@ -108,39 +62,12 @@ class Profile extends Component {
             weight: '',
             birthday: '',
             gender: '',
-            profilePicUrl: ''
-        };
-    };
-
-    albumContainer = () => {
-        const albumClass = albumStyles();
-        const albumUrls = this.state.albumUrls;
-        return (
-            <React.Fragment>
-                <div className={albumClass.root}>
-                    <GridList cellHeight={350} className={albumClass.gridList} cols={2.5}>
-                        {albumUrls.map((image, index) => (
-                            <GridListTile key={index}>
-                                <img src={image} alt='album' />
-                            </GridListTile>
-                        ))}
-                    </GridList>
-                </div>
-            </React.Fragment>
-        );
-    };
-
-    handleDeleteDoggo = async e => {
-        e.preventDefault();
-
-        if (
-            window.confirm(
-                `Are you sure you want to delete doggo '${this.state.name}' permanently?`,
-            )
-        ) {
-            api.deleteDoggoById(this.state.id);
-            this.props.history.push('/');
-            window.location.reload();//force reload profiles
+            profilePicUrl: '',
+            albumImage: null,
+            displayTemperament: false,
+            displayBiography: false,
+            dataMap: [],
+            modalIsOpen: false
         };
     };
 
@@ -166,6 +93,22 @@ class Profile extends Component {
             });
         };
 
+        // get temperament object
+        var temperament = {};
+        var displayTemperament = false;
+        if (doggo.data.data.biography !== undefined) {
+            displayTemperament = true;
+            temperament = doggo.data.data.temperament;
+        };
+
+        // get biography object
+        var biography = {};
+        var displayBiography = false;
+        if (doggo.data.data.biography !== undefined) {
+            displayBiography = true;
+            biography = doggo.data.data.biography;
+        };
+
         this.setState({
             name: doggo.data.data.name,
             breed: doggo.data.data.breed,
@@ -175,40 +118,54 @@ class Profile extends Component {
             birthday: doggo.data.data.birthday,
             gender: doggo.data.data.gender,
             profilePicUrl: profilePicPath,
-            albumUrls: albumPicPaths
+            albumUrls: albumPicPaths,
+            displayTemperament,
+            displayBiography,
+            biography,
+            temperament
         });
     };
 
-
     render() {
-        const { name, breed, color, age, weight, birthday, gender, albumUrls } = this.state;
-        const bday = this.state.birthday === '' || this.state.birthday === null
+        const {
+            id,
+            name,
+            breed,
+            color,
+            age,
+            weight,
+            birthday,
+            gender,
+            profilePicUrl,
+            albumUrls,
+            temperament,
+            biography,
+            displayTemperament,
+            displayBiography
+        } = this.state;
+        const bday = birthday === '' || birthday === null
             ? 'No Birthday Entered'
             : <Moment format='MM/DD/YYYY'>{birthday}</Moment>;
-        const image = this.state.profilePicUrl;
 
         return (
             <Container>
                 <Row>
                     <Col sm={true}>
-                        {this.state.profilePicUrl != null
-                            ? this.state.profilePicUrl.length > 0
-                                ? <ColContainer>
-                                    <div>
-                                        <br />
-                                        <ImageContainer>
-                                            <Image src={image} alt='Profile Pic' thumbnail fluid />
-                                        </ImageContainer>
-                                    </div>
-                                </ColContainer>
-                                : <ImageContainer>
-                                    <Image
-                                        src={require(`../../src/resources/default.jpg`)}
-                                        alt='default Profile Pic'
-                                        thumbnail
-                                        fluid
-                                    />
-                                </ImageContainer>
+                        {profilePicUrl != null
+                            && profilePicUrl.length > 0
+                            ? <ColContainer>
+                                <div>
+                                    <br />
+                                    <ImageContainer>
+                                        <Image
+                                            src={profilePicUrl}
+                                            alt='Profile Pic'
+                                            thumbnail
+                                            fluid
+                                        />
+                                    </ImageContainer>
+                                </div>
+                            </ColContainer>
                             : <ImageContainer>
                                 <Image
                                     src={require(`../../src/resources/default.jpg`)}
@@ -222,7 +179,7 @@ class Profile extends Component {
                         <ColContainer>
                             <Title>{name}</Title>
                             <br />
-                            <Table striped bordered hover size="sm">
+                            <Table striped bordered hover size='sm'>
                                 <tbody>
                                     <tr>
                                         <td>Breed: </td>
@@ -255,20 +212,41 @@ class Profile extends Component {
                     </Col>
                 </Row>
                 <br />
-                {albumUrls != null ? albumUrls.length > 0 ?
+
+                {displayTemperament ?
                     <div>
-                        <Label>Album Images</Label>
-                        <this.albumContainer />
-                    </div> : null : null}
-                <br />
+                        <ProfileGraph temperament={temperament} />
+                        <br />
+                    </div> : null}
+
+                {displayBiography ?
+                    <div>
+                        <BiographySection biography={biography} />
+                        <br />
+                    </div> : null}
+
+                {albumUrls != null && albumUrls.length > 0 ?
+                    <ProfileAlbum
+                        name={name}
+                        albumUrls={albumUrls}
+                    /> : null}
+
+
                 <Wrapper>
-                    <UpdateDoggo id={this.state.id} name={this.state.name} />
-                    <DeleteButton onClick={this.handleDeleteDoggo}>Delete Profile</DeleteButton>
-                    <Footer />
+                    <UpdateProfile
+                        id={id}
+                        name={name}
+                        history={this.props.history}
+                    />
+                    <DeleteProfile
+                        id={id}
+                        name={name}
+                        history={this.props.history}
+                    />
                 </Wrapper>
             </Container>
-        );
-    };
-};
-
+                );
+            };
+        };
+        
 export default Profile;
