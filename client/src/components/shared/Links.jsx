@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import ResponsiveMenu from 'react-responsive-navbar';
-import {IoIosArrowDown, IoMdClose} from 'react-icons/io';
+import { IoIosArrowDown, IoMdClose } from 'react-icons/io';
 
 const Collapse = styled.div.attrs({
     className: 'collpase navbar-collapse',
@@ -19,34 +19,34 @@ const Item = styled.div.attrs({
 class Links extends Component {
     render() {
         return (
-            <React.Fragment>            
+            <React.Fragment>
                 <Link to='#' className='navbar-brand'>
                     Doggo Match
                 </Link>
-            
+
                 <ResponsiveMenu
                     menuOpenButton={<IoIosArrowDown color={'white'} />}
                     menuCloseButton={<IoMdClose color={'white'} />}
                     changeMenuOn='500px'
                     largeMenuClassName='large-menu-classname'
                     smallMenuClassName='small-menu-classname'
-                    menu={                        
+                    menu={
                         <Collapse>
                             <List>
                                 <Item>
                                     <Link to='/' className='nav-link'>
                                         Profiles
                                     </Link>
-                                </Item>
+                                </Item>                           
                                 <Item>
                                     <Link to='/doggos/create' className='nav-link'>
                                         Add Profile
                                     </Link>
                                 </Item>
-                                </List>
-                            </Collapse>                        
-                        }
-                />               
+                            </List>
+                        </Collapse>
+                    }
+                />
             </React.Fragment>
         );
     };

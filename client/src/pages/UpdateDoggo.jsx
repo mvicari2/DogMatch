@@ -4,18 +4,14 @@ import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import axios from 'axios';
 import config from '../config/config';
+import Typography from '@material-ui/core/Typography';
+import 'typeface-roboto';
 import {
     UpdateNavBar,
     BirthdayCalendar,
     ProfileImage,
     BasicProfile
 } from '../components';
-
-const Title = styled.h1.attrs({
-    className: 'h1',
-})`
-    text-align: center;
-`;
 
 const Wrapper = styled.div.attrs({
     className: 'form-group col-sm-8',
@@ -30,6 +26,10 @@ const Button = styled.button.attrs({
     className: `btn btn-primary`,
 })`
     margin: 15px 15px 15px 5px;
+`;
+
+const TitleWrapper = styled.div`
+    text-align: center;
 `;
 
 class UpdateDoggo extends Component {
@@ -156,7 +156,11 @@ class UpdateDoggo extends Component {
 
         return (
             <Container>
-                <Title>Update {name}'s Profile</Title>
+                <TitleWrapper>
+                    <Typography gutterBottom variant="h2" component="h1">
+                        Update {name}'s Profile
+                    </Typography>
+                </TitleWrapper>
                 {name !== '' ?
                     <UpdateNavBar
                         id={id}
@@ -188,7 +192,7 @@ class UpdateDoggo extends Component {
                     <Button onClick={this.handleUpdateDoggo}>Save Updated Profile</Button>
                     <br />
                 </Wrapper>
-                {name !== '' 
+                {name !== ''
                     && id !== undefined ?
                     <UpdateNavBar
                         id={id}

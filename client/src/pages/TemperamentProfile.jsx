@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import api from '../api';
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
+import Typography from '@material-ui/core/Typography';
+import 'typeface-roboto';
 import {
     SectionOne,
     SectionTwo,
@@ -11,12 +13,6 @@ import {
     SectionSix,
     SectionSeven
 } from '../components';
-
-const Title = styled.h1.attrs({
-    className: 'h1',
-})`
-    text-align: center;
-`;
 
 const Wrapper = styled.div.attrs({
     className: 'form-group col-lg-10',
@@ -47,7 +43,7 @@ class TemperamentProfile extends Component {
     };
 
     handleNext = async sectionData => {
-        const { section }= this.state;
+        const { section } = this.state;
 
         // update section number
         const newSection = section + 1;
@@ -87,7 +83,7 @@ class TemperamentProfile extends Component {
             case 6:
                 this.setState({
                     section: newSection,
-                    sectionSixData: sectionData                    
+                    sectionSixData: sectionData
                 });
                 break;
             default:
@@ -158,7 +154,7 @@ class TemperamentProfile extends Component {
     handleNewSection = async newSection => {
         const section = newSection;
         this.setState({ section });
-    };      
+    };
 
     handleSectionError = async () => {
         this.props.history.push('/');
@@ -395,8 +391,10 @@ class TemperamentProfile extends Component {
             case 1:
                 return (
                     <Container ref={this.topOfPageRef}>
-                        <Title>{name}'s Temperament Profile</Title>
                         <Wrapper>
+                            <Typography gutterBottom variant='h3'>
+                                {name}'s Temperament Profile
+                            </Typography>
                             {sectionOneData !== undefined
                                 ? <SectionOne
                                     sectionOneData={sectionOneData}
@@ -404,7 +402,7 @@ class TemperamentProfile extends Component {
                                     sectionNext={this.handleNext}
                                     sendNewSection={this.handleNewSection}
                                 />
-                                : null}                            
+                                : null}
                         </Wrapper>
                     </Container>
                 );
@@ -412,14 +410,16 @@ class TemperamentProfile extends Component {
             case 2:
                 return (
                     <Container ref={this.topOfPageRef}>
-                        <Title>{name}'s Temperament Profile</Title>
                         <Wrapper>
+                            <Typography gutterBottom variant='h3'>
+                                {name}'s Temperament Profile
+                            </Typography>
                             <SectionTwo
                                 sectionTwoData={sectionTwoData}
                                 sectionBack={this.handleBack}
                                 sectionNext={this.handleNext}
                                 sendNewSection={this.handleNewSection}
-                            />                            
+                            />
                         </Wrapper>
                     </Container>
                 );
@@ -427,14 +427,16 @@ class TemperamentProfile extends Component {
             case 3:
                 return (
                     <Container ref={this.topOfPageRef}>
-                        <Title>{name}'s Temperament Profile</Title>
                         <Wrapper>
+                            <Typography gutterBottom variant='h3'>
+                                {name}'s Temperament Profile
+                            </Typography>
                             <SectionThree
                                 sectionThreeData={sectionThreeData}
                                 sectionBack={this.handleBack}
                                 sectionNext={this.handleNext}
                                 sendNewSection={this.handleNewSection}
-                            />                            
+                            />
                         </Wrapper>
                     </Container>
                 );
@@ -442,14 +444,16 @@ class TemperamentProfile extends Component {
             case 4:
                 return (
                     <Container ref={this.topOfPageRef}>
-                        <Title>{name}'s Temperament Profile</Title>
                         <Wrapper>
+                            <Typography gutterBottom variant='h3'>
+                                {name}'s Temperament Profile
+                            </Typography>
                             <SectionFour
                                 sectionFourData={sectionFourData}
                                 sectionBack={this.handleBack}
                                 sectionNext={this.handleNext}
                                 sendNewSection={this.handleNewSection}
-                            />                            
+                            />
                         </Wrapper>
                     </Container>
                 );
@@ -457,14 +461,16 @@ class TemperamentProfile extends Component {
             case 5:
                 return (
                     <Container ref={this.topOfPageRef}>
-                        <Title>{name}'s Temperament Profile</Title>
                         <Wrapper>
+                            <Typography gutterBottom variant='h3'>
+                                {name}'s Temperament Profile
+                            </Typography>
                             <SectionFive
                                 sectionFiveData={sectionFiveData}
                                 sectionBack={this.handleBack}
                                 sectionNext={this.handleNext}
                                 sendNewSection={this.handleNewSection}
-                            />                            
+                            />
                         </Wrapper>
                     </Container>
                 );
@@ -472,14 +478,16 @@ class TemperamentProfile extends Component {
             case 6:
                 return (
                     <Container ref={this.topOfPageRef}>
-                        <Title>{name}'s Temperament Profile</Title>
                         <Wrapper>
+                            <Typography gutterBottom variant='h3'>
+                                {name}'s Temperament Profile
+                            </Typography>
                             <SectionSix
                                 sectionSixData={sectionSixData}
                                 sectionBack={this.handleBack}
                                 sectionNext={this.handleNext}
                                 sendNewSection={this.handleNewSection}
-                            />                            
+                            />
                         </Wrapper>
                     </Container>
                 );
@@ -487,14 +495,16 @@ class TemperamentProfile extends Component {
             case 7:
                 return (
                     <Container ref={this.topOfPageRef}>
-                        <Title>{name}'s Temperament Profile</Title>
                         <Wrapper>
+                            <Typography gutterBottom variant='h3'>
+                                {name}'s Temperament Profile
+                            </Typography>
                             <SectionSeven
                                 sectionSevenData={sectionSevenData}
                                 history={this.props.history}
                                 sectionBack={this.handleBack}
                                 sendNewSection={this.handleNewSection}
-                            />                            
+                            />
                         </Wrapper>
                     </Container>
                 );
@@ -502,9 +512,11 @@ class TemperamentProfile extends Component {
             default:
                 return (
                     <Container ref={this.topOfPageRef}>
-                        <Title>{name}'s Temperament Profile</Title>
-                        Error
                         <Wrapper>
+                            <Typography gutterBottom variant='h3'>
+                                {name}'s Temperament Profile
+                            </Typography>
+                            Error
                             <Button onClick={this.handleSectionError}>
                                 Go Back to Profiles
                             </Button>

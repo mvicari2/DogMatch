@@ -1,3 +1,5 @@
+// ->->-> Page Component Index <-<-<- //
+
 import CreateDoggo from './CreateDoggo';
 import DoggoProfiles from './DoggoProfiles';
 import UpdateDoggo from './UpdateDoggo';
@@ -13,5 +15,5 @@ export {
     Profile, 
     TemperamentProfile, 
     BiographyProfile,
-    AlbumUpload 
+    AlbumUpload
 };

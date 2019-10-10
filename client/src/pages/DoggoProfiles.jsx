@@ -1,185 +1,207 @@
 import React, { Component } from 'react';
-import ReactTable from 'react-table';
 import api from '../api';
 import styled from 'styled-components';
 import 'react-table/react-table.css';
-import Moment from 'react-moment';
+import Typography from '@material-ui/core/Typography';
+import 'typeface-roboto';
+import {
+    ProfilesTable,
+    ProfilesCards,
+    ProfilesFilter,
+    Loading
+} from '../components';
 
 const Wrapper = styled.div`
-    padding: 0 40px 40px 40px;
-`;
-
-const Profile = styled.div`
-    color: green;
-    cursor: pointer;
-`;
-
-const Title = styled.h1.attrs({
-    className: 'h1',
-})`
+    padding: 0 5px 0 5px;
     text-align: center;
 `;
-
-const Update = styled.div`
-    color: #ef9b0f;
-    cursor: pointer;
-`;
-
-const Delete = styled.div`
-    color: #ff0000;
-    cursor: pointer;
-`;
-
-class ViewProfile extends Component {
-        viewProfile = e => {
-        e.preventDefault();
-        window.location.href = `/doggos/profile/${this.props.id}`;
-    };
-
-    render() {
-        return <Profile onClick={this.viewProfile}>View Profile</Profile>
-    };
-};
-
-class UpdateDoggo extends Component {
-    updateProfile = e => {
-        e.preventDefault();
-        window.location.href = `/doggos/update/${this.props.id}`;
-    };
-
-    render() {
-        return <Update onClick={this.updateProfile}>Update</Update>
-    };
-};
-
-class DeleteDoggo extends Component {
-    deleteProfile = e => {
-        e.preventDefault();
-
-        if (
-            window.confirm(
-                `Are you sure you want to delete doggo '${this.props.name}' permanently?`,
-            )
-        ) {
-            api.deleteDoggoById(this.props.id);
-            window.location.reload();
-        };
-    };
-
-    render = () => {
-        return <Delete onClick={this.deleteProfile}>Delete</Delete>
-    };
-};
 
 class DoggoProfiles extends Component {
     constructor(props) {
         super(props)
         this.state = {
             profiles: [],
-            isLoading: false,
-            columns: []
+            originalProfiles: [],
+            showTable: false,
+            isFiltered: false
         };
+    };
+    
+    handleFilterProfiles = async params => {
+        var { originalProfiles } = this.state;
+        var profiles = originalProfiles;
+
+        // filter using age range
+        if (params.ageRange.low !== 0 || params.ageRange.high !== 30) {
+            if (params.ageRange.low > params.ageRange.high) {
+                alert('Age Range does not compute, starting age must be less than ending age.');
+                return;
+            } else {
+                profiles = profiles.filter(profile => {
+                    return profile.age >= params.ageRange.low
+                        && profile.age <= params.ageRange.high;
+                });
+            };
+        };
+        
+        // filter by gender
+        if (params.genderFilter === 'male') {
+            profiles = profiles.filter(profile => {
+                return profile.gender === 'male';
+            });
+        } else if (params.genderFilter === 'female') {
+            profiles = profiles.filter(profile => {
+                return profile.gender === 'female';
+            });
+        };
+
+        // ordering by (name || breed || age || weight)
+        switch (params.orderBy) {
+            case '1': // Order By Age                
+                if (params.ageOrder === '1') {
+                    profiles = profiles.sort((a, b) => {
+                        return a.age - b.age;
+                    });
+                } else if (params.ageOrder === '2') {
+                    profiles = profiles.sort((a, b) => {
+                        return b.age - a.age;
+                    });
+                };
+                break;
+
+            case '2': // Order By Name                
+                if (params.nameOrder === '1') {
+                    profiles = profiles.sort((profileA, profileB) => {
+                        var aName = profileA.name.toUpperCase();
+                        var bName = profileB.name.toUpperCase();
+
+                        return (aName < bName) ? -1 : (aName > bName) ? 1 : 0;
+                    });
+                } else if (params.nameOrder === '2') {
+                    profiles = profiles.sort((profileA, profileB) => {
+                        var aName = profileA.name.toUpperCase();
+                        var bName = profileB.name.toUpperCase();
+
+                        return (bName < aName) ? -1 : (bName > aName) ? 1 : 0;
+                    });
+                };
+                break;
+
+            case '3': // Order By Breed                
+                if (params.breedOrder === '1') {
+                    profiles = profiles.sort((profileA, profileB) => {
+                        var aBreed = profileA.breed.toUpperCase();
+                        var bBreed = profileB.breed.toUpperCase();
+
+                        return (aBreed < bBreed) ? -1 : (aBreed > bBreed) ? 1 : 0;
+                    });
+                } else if (params.breedOrder === '2') {
+                    profiles = profiles.sort((profileA, profileB) => {
+                        var aBreed = profileA.breed.toUpperCase();
+                        var bBreed = profileB.breed.toUpperCase();
+
+                        return (aBreed > bBreed) ? -1 : (aBreed < bBreed) ? 1 : 0;
+                    });
+                };
+                break;
+
+            case '4': // Order By Weight
+                if (params.weightOrder === '1') {
+                    profiles = profiles.sort((a, b) => {
+                        return a.weight - b.weight;
+                    });
+                } else if (params.weightOrder === '2') {
+                    profiles = profiles.sort((a, b) => {
+                        return b.weight - a.weight;
+                    });
+                };
+                break;
+            default:
+                console.log('no profile ordering selected');
+        };
+
+        const profilesLength = profiles.length;
+        var isFiltered = false;
+
+        if (params.ageRange.low !== 0 || params.ageRange.high !== 30
+            || params.orderBy !== '0' || params.genderFilter !== '0') {
+            isFiltered = true;
+        };
+        
+        this.setState({
+            profiles,
+            profilesLength,
+            isFiltered
+        });
+    };
+
+    handleClearFilter = async e => {
+        const { originalProfiles } = this.state;
+        const profilesLength = originalProfiles.length;
+
+        // set back to intial profiles list and length on clear filter
+        this.setState({
+            profiles: originalProfiles,
+            profilesLength,
+            isFiltered: false
+        });
+    };
+
+    handleSwitchProfiles = async () => {
+        this.setState({ showTable: !this.state.showTable })
     };
 
     componentDidMount = async () => {
         this.setState({ isLoading: true });
 
         await api.getAllDoggos().then(profiles => {
+            const profilesList = profiles.data.data;
+            const profilesLength = profilesList.length;
+
             this.setState({
-                profiles: profiles.data.data,
+                profiles: profilesList,
+                originalProfiles: profilesList,
+                profilesLength,
                 isLoading: false,
             });
-        })
+        });
     };
 
     render() {
-        const { profiles } = this.state;
-        console.log('Doggo Profiles: ', profiles);
-
-        const columns = [
-            {
-                Header: 'ID',
-                accessor: '_id'
-            },
-            {
-                Header: 'Name',
-                accessor: 'name'
-            },
-            {
-                Header: 'Breed',
-                accessor: 'breed'
-            },
-            {
-                Header: 'Color',
-                accessor: 'color',
-                Cell: props => <span>{props.value.join(', ')}</span>
-            },
-            {
-                Header: 'Age',
-                accessor: 'age'
-            },
-            {
-                Header: 'Weight',
-                accessor: 'weight'
-            },
-            {
-                Header: 'Birthday',
-                accessor: 'birthday',
-                Cell: props => <Moment format='MM/DD/YYYY'>{props.value}</Moment>
-            },
-            {
-                Header: 'Gender',
-                accessor: 'gender'
-            },
-            {
-                Header: '',
-                accessor: '',
-                Cell: function(props) {
-                    return (
-                        <span>
-                            <ViewProfile id={props.original._id} />
-                        </span>
-                    )
-                },
-            },
-            {
-                Header: '',
-                accessor: '',
-                Cell: function(props) {
-                    return (
-                        <span>
-                            <UpdateDoggo id={props.original._id} />
-                        </span>
-                    )
-                },
-            },
-            {
-                Header: '',
-                accessor: '',
-                Cell: function(props) {
-                    return (
-                        <span>
-                            <DeleteDoggo id={props.original._id} name={props.original.name} />
-                        </span>
-                    )
-                },
-            }            
-        ];
+        const {
+            profiles,
+            profilesLength,
+            isLoading,
+            showTable,
+            isFiltered
+        } = this.state;
 
         return (
             <Wrapper>
-            <Title>Doggo Profiles</Title>
-            <br />                
-                <ReactTable
-                    data={profiles}
-                    noDataText='No Doggos Saved!'
-                    columns={columns}
-                    className='-striped -highlight'
-                    //loading={isLoading} //might add again for larger data sets
-                    defaultPageSize={50}
-                    showPageSizeOptions={true}
-                    minRows={5}
-                />           
+                <Typography gutterBottom variant="h2">
+                    Doggo Profiles
+                </Typography>
+                {isLoading
+                    ? <Wrapper>
+                        <Loading />
+                    </Wrapper>
+                    : <Wrapper>
+                        <ProfilesFilter
+                            handleFilter={this.handleFilterProfiles}
+                            clearFilter={this.handleClearFilter}
+                            switchProfiles={this.handleSwitchProfiles}
+                            isFiltered={isFiltered}
+                            showTable={showTable}
+                        />
+                        {profilesLength} profiles
+                                <br /><br />
+                        {showTable
+                            ? <ProfilesTable profiles={profiles} />
+                            : <ProfilesCards
+                                profiles={profiles}
+                                history={this.props.history}
+                            />}                        
+                    </Wrapper>}                
             </Wrapper>
         );
     };

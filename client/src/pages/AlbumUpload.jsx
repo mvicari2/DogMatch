@@ -4,13 +4,9 @@ import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import axios from 'axios';
 import config from '../config/config';
+import Typography from '@material-ui/core/Typography';
+import 'typeface-roboto';
 import { AlbumDropContainer } from '../components';
-
-const Title = styled.h1.attrs({
-    className: 'h1',
-})`
-    text-align: center;
-`;
 
 const Wrapper = styled.div.attrs({
     className: 'form-group col-lg-10',
@@ -189,7 +185,6 @@ class AlbumUpload extends Component {
         });
     };
 
-
     render() {
         const {
             name,
@@ -198,8 +193,12 @@ class AlbumUpload extends Component {
 
         return (
             <Container>
-                <Title>Upload a Photo Album of {name}</Title>
                 <Wrapper>
+                    <Typography gutterBottom variant='h3' component='h3'>
+                        Upload a Photo Album of 
+                        <br />
+                        {name}
+                    </Typography>
                     <br />
                     <AlbumDropContainer
                         handleAlbumDrop={this.handleAlbumFiles}

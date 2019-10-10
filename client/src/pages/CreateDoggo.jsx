@@ -4,17 +4,13 @@ import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import axios from 'axios';
 import config from '../config/config';
+import Typography from '@material-ui/core/Typography';
+import 'typeface-roboto';
 import {
     BasicProfile,
     ProfileImage,
     BirthdayCalendar
 } from '../components';
-
-const Title = styled.h1.attrs({
-    className: 'h1',
-})`
-    text-align: center;
-`;
 
 const Wrapper = styled.div.attrs({
     className: 'form-group col-sm-8',
@@ -74,7 +70,7 @@ class CreateDoggo extends Component {
 
     handlePostDoggo = async () => {
         const { profilePicture } = this.state;
-        
+
         // post profile picture, return filename
         if (profilePicture !== null) {
             const data = new FormData();
@@ -124,8 +120,10 @@ class CreateDoggo extends Component {
 
         return (
             <Container>
-                <Title>Create Doggo Profile</Title>
                 <Wrapper>
+                    <Typography gutterBottom variant='h3'>
+                        Create Doggo Profile
+                    </Typography>
                     <BasicProfile
                         basicProfileData={basicProfileData}
                         handleBasicProfile={this.handleBasicProfile}

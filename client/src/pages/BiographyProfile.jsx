@@ -2,12 +2,9 @@ import React, { Component } from 'react';
 import api from '../api';
 import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
+import Typography from '@material-ui/core/Typography';
+import 'typeface-roboto';
 
-const Title = styled.h1.attrs({
-    className: 'h1',
-})`
-    text-align: center;
-`;
 
 const Wrapper = styled.div.attrs({
     className: 'form-group col-lg-10',
@@ -151,8 +148,10 @@ class BiographyProfile extends Component {
 
         return (
             <Container>
-                <Title>{name}'s Biography Profile</Title>
                 <Wrapper>
+                    <Typography gutterBottom variant='h2'>
+                        {name}'s Biography Profile
+                    </Typography>
                     <Label>Tell us all about {name} (biography): </Label>
                     <InputTextLarge
                         type='text'

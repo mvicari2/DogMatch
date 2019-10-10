@@ -19,7 +19,7 @@ const Nav = styled.nav.attrs({
     margin-right: -15px;
     margin-top: -5px;
     padding: 0px;
-    min-width: 100vh;
+    min-width: 100%;
     background: -webkit-gradient( linear, left bottom, left top, color-stop(0.09, rgb(59,63,65)), color-stop(0.55, rgb(72,76,77)), color-stop(0.78, rgb(75,77,77)) );
     background: -moz-linear-gradient( center bottom, rgb(59,63,65) 9%, rgb(72,76,77) 55%, rgb(75,77,77) 78% );
     background: -o-linear-gradient( center bottom, rgb(59,63,65) 9%, rgb(72,76,77) 55%, rgb(75,77,77) 78% );

@@ -10,6 +10,8 @@ import Table from 'react-bootstrap/Table'
 import { FaBirthdayCake } from 'react-icons/fa';
 import config from '../config/config';
 import Modal from 'react-modal';
+import Typography from '@material-ui/core/Typography';
+import 'typeface-roboto';
 import {
     ProfileGraph,
     BiographySection,
@@ -19,12 +21,6 @@ import {
 } from '../components';
 
 Modal.setAppElement('#root');
-
-const Title = styled.h1.attrs({
-    className: 'h3',
-})`
-    text-align: center;
-`;
 
 const Wrapper = styled.div.attrs({
     className: 'form-group col-sm-8',
@@ -96,7 +92,7 @@ class Profile extends Component {
         // get temperament object
         var temperament = {};
         var displayTemperament = false;
-        if (doggo.data.data.biography !== undefined) {
+        if (doggo.data.data.temperament !== undefined) {
             displayTemperament = true;
             temperament = doggo.data.data.temperament;
         };
@@ -177,8 +173,11 @@ class Profile extends Component {
                     </Col>
                     <Col sm={true} lg={true} md={true}>
                         <ColContainer>
-                            <Title>{name}</Title>
+                            <Typography gutterBottom variant='h4'>
+                                {name}
+                            </Typography>
                             <br />
+
                             <Table striped bordered hover size='sm'>
                                 <tbody>
                                     <tr>
@@ -245,8 +244,8 @@ class Profile extends Component {
                     />
                 </Wrapper>
             </Container>
-                );
-            };
-        };
-        
+        );
+    };
+};
+
 export default Profile;
