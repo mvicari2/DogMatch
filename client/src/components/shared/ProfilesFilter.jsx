@@ -3,12 +3,14 @@ import styled from 'styled-components';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Divider from '@material-ui/core/Divider';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import resources from '../../resources/resources';
-import Divider from '@material-ui/core/Divider';
+import Checkbox from '@material-ui/core/Checkbox';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
 import Modal from 'react-modal';
 import { IoIosClose } from 'react-icons/io';
 
@@ -47,8 +49,21 @@ const Label = styled.label`
     margin: 5px;
 `;
 
+const SearchLabel = styled.label`
+    margin: 5px;
+    margin-top: 15px
+    display: inline;
+`;
+
 const Button = styled.button.attrs({
     className: `btn btn-outline-primary btn-sm`,
+})`
+    margin: 15px 15px 15px 5px;
+    display: inline;
+`;
+
+const ClearButton = styled.button.attrs({
+    className: `btn btn-outline-danger btn-sm`,
 })`
     margin: 15px 15px 15px 5px;
     display: inline;
@@ -59,10 +74,27 @@ const CloseModalIcon = styled.div`
     text-align: right; 
 `;
 
+const FilterRow = styled.div.attrs({
+    className: 'form-group row justify-content-center',
+})`
+    max-width: 100%;
+    margin-top: -20px;
+`;
+
+const InputWrapper = styled.span`
+    display: block;
+    margin-right: 10px;
+    margin-top: 15px;    
+`;
+
 class ProfilesFilter extends Component {
     constructor(props) {
         super(props)
-        this.state = {            
+        this.state = {
+            modalIsOpen: false,
+            searchString: '',
+            includeBio: false,
+            showingResults: false,
             filterParams: {
                 // dropdowns
                 ageRange: {
@@ -173,29 +205,102 @@ class ProfilesFilter extends Component {
         this.props.switchProfiles();
     };
 
+    handleSearchString = async e => {
+        const searchString = e.target.value;
+        this.setState({ searchString });
+    };
+
+    handleSubmitSearch = async () => {
+        const { searchString, includeBio } = this.state;
+        const search = {
+            searchString,
+            includeBio
+        };
+
+        this.props.searchProfiles(search);
+        this.setState({ showingResults: true });
+    };
+
+    handleClearSearch = async () => {
+        this.props.clearSearch();
+        this.setState({
+            searchString: '',
+            showingResults: false
+        });
+    };
+
+    handleIncludeBioChange = async e => {
+        this.setState({ includeBio: true });
+    };
+
+    // submit search if user presses enter key with search form field selected
+    handleKeyPress = async e => {
+        if (e.charCode === 13) {
+            this.handleSubmitSearch();
+        };
+    };
+
     render() {
-        const { modalIsOpen, filterParams } = this.state;
         const { isFiltered, showTable } = this.props;
+        const {
+            modalIsOpen,
+            filterParams,
+            searchString,
+            showingResults
+        } = this.state;
 
         return (
-            <div>
-                {showTable
-                    ? <Button onClick={this.handleSwitchProfiles}>
-                        Show Profiles as Cards
+            <React.Fragment>
+                <FilterRow>
+                    <SearchLabel>Search</SearchLabel>
+
+                    <InputWrapper>
+                        <Form.Control
+                            type='text'
+                            size='sm'
+                            onChange={this.handleSearchString}
+                            onKeyPress={this.handleKeyPress}
+                            value={searchString}
+                        />
+                    </InputWrapper>
+
+                    <Button onClick={this.handleSubmitSearch}>
+                        Search
                     </Button>
-                    : <Button onClick={this.handleSwitchProfiles}>
-                        Show Profiles as Table
-                    </Button>}
 
-                <Button onClick={this.handleOpenModal}>
-                    Filter Profiles
-                </Button>
+                    <FormControlLabel
+                        control={<Checkbox color='primary' />}
+                        label='Include Biography in Search'
+                        labelPlacement='end'
+                        onChange={this.handleIncludeBioChange}
+                    />
 
-                {isFiltered
-                    ? <Button onClick={this.handleClearFilter}>
-                        Clear Filter
+                    {showingResults
+                        ? <ClearButton onClick={this.handleClearSearch}>
+                            Clear Search
+                            </ClearButton>
+                        : null}
+                </FilterRow>
+
+                <FilterRow>
+                    {showTable
+                        ? <Button onClick={this.handleSwitchProfiles}>
+                            Show Profiles as Cards
+                            </Button>
+                        : <Button onClick={this.handleSwitchProfiles}>
+                            Show Profiles as Table
+                            </Button>}
+
+                    <Button onClick={this.handleOpenModal}>
+                        Filter Profiles
                         </Button>
-                    : null}
+
+                    {isFiltered
+                        ? <ClearButton onClick={this.handleClearFilter}>
+                            Clear Filter
+                            </ClearButton>
+                        : null}
+                </FilterRow>
 
                 <Modal
                     isOpen={modalIsOpen}
@@ -370,7 +475,7 @@ class ProfilesFilter extends Component {
                                         </div>
                                         : null}
 
-                                        {filterParams.orderBy === '4'
+                                    {filterParams.orderBy === '4'
                                         ?
                                         <div>
                                             <Label>Order Weights: </Label>
@@ -432,10 +537,10 @@ class ProfilesFilter extends Component {
                             </Col>
                         </Row>
                         <Button onClick={this.handleSubmitFilter}>Filter Profiles</Button>
-                        <Button onClick={this.handleClearFilter}>Clear Filter</Button>
+                        <ClearButton onClick={this.handleClearFilter}>Clear Filter</ClearButton>
                     </Wrapper>
                 </Modal>
-            </div>
+            </React.Fragment>
         );
     };
 };

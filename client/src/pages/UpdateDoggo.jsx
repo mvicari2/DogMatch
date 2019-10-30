@@ -157,7 +157,7 @@ class UpdateDoggo extends Component {
         return (
             <Container>
                 <TitleWrapper>
-                    <Typography gutterBottom variant="h2" component="h1">
+                    <Typography gutterBottom variant='h2' component='h1'>
                         Update {name}'s Profile
                     </Typography>
                 </TitleWrapper>
