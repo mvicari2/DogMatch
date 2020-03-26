@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -7,17 +6,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-
-const Text = styled.div`
-    display: block;    
-    text-align: center;
-`;
-
-const Label = styled.h3`
-    margin: 5px;
-    color: #616b61;
-    text-align: center;
-`;
+import { Text, HeadingMedium } from '../../style/dog-styles';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -85,7 +74,7 @@ class BiographySection extends Component {
             <React.Fragment>
                 <div className={classes.root}>
                     <AppBar position='static' color='default'>
-                        <Label>Biography</Label>
+                        <HeadingMedium>Biography</HeadingMedium>
                         <Tabs
                             value={value}
                             onChange={this.handleBiographyChange}

@@ -1,0 +1,32 @@
+{    
+    "version": "0.2.0",
+    "configurations": [
+        // Server Launch via npm w/debug
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Server via npm",
+            "runtimeExecutable": "npm",
+            "cwd": "${workspaceRoot}\\server",
+            "restart": true,
+            "stopOnEntry": false,
+            "runtimeArgs": [
+                "run-script",
+                "debug"
+            ],
+            "port": 9229,
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },  
+
+        // Client debugging in Chrome  
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Client Chrome Debug",
+            "url": "http://localhost:8000",
+            "webRoot": "${workspaceFolder}\\client"
+        }      
+    ]
+}

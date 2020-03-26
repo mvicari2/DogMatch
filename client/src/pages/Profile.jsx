@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import api from '../api';
-import styled from 'styled-components';
 import Moment from 'react-moment';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -12,38 +11,23 @@ import config from '../config/config';
 import Modal from 'react-modal';
 import Typography from '@material-ui/core/Typography';
 import 'typeface-roboto';
+
+import {
+    WrapperCol,
+    ImageContainer,
+    ColContainer
+} from '../style/dog-styles';
+
 import {
     ProfileGraph,
     BiographySection,
     ProfileAlbum,
     DeleteProfile,
-    UpdateProfile
+    UpdateProfile,
+    Matches
 } from '../components';
 
 Modal.setAppElement('#root');
-
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-sm-8',
-})`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const ImageContainer = styled.div`    
-    max-width: 450px;
-    max-height: 90vh;
-    width: auto;
-    height: auto;
-    text-align: center !important;
-`;
-
-const ColContainer = styled.div`
-    width: auto;
-    height: auto;
-    text-align: center !important;
-`;
 
 class Profile extends Component {
     constructor(props) {
@@ -120,6 +104,31 @@ class Profile extends Component {
             biography,
             temperament
         });
+    };
+
+    handleGetMatches = async () => {
+        this.setState({ isLoading: true });
+        const { id } = this.state;
+
+        await api.getMatchesById(id).then(matches => {
+            const doggoMatches = matches.data.data;
+            const matchesLength = doggoMatches.length;
+
+            this.setState({
+                matches: doggoMatches,
+                matchesLength,
+                modalIsOpen: true,
+                isLoading: false
+            });
+        });
+    };
+
+    handleAfterOpenModal = () => {
+        this.subtitle.style.color = '#f00';
+    };
+
+    handleCloseModal = () => {
+        this.setState({ modalIsOpen: false });
     };
 
     render() {
@@ -207,31 +216,37 @@ class Profile extends Component {
                                     </tr>
                                 </tbody>
                             </Table>
+                            {name !== null && name !== undefined && name !== '' &&
+                                <Matches
+                                    id={id}
+                                    name={name}
+                                    history={this.props.history}
+                                />}
                         </ColContainer>
                     </Col>
                 </Row>
                 <br />
 
-                {displayTemperament ?
+                {displayTemperament &&
                     <div>
                         <ProfileGraph temperament={temperament} />
                         <br />
-                    </div> : null}
+                    </div>}
 
-                {displayBiography ?
+                {displayBiography &&
                     <div>
                         <BiographySection biography={biography} />
                         <br />
-                    </div> : null}
+                    </div>}
 
-                {albumUrls != null && albumUrls.length > 0 ?
+                {albumUrls != null && albumUrls.length > 0 &&
                     <ProfileAlbum
                         name={name}
                         albumUrls={albumUrls}
-                    /> : null}
+                    />}
 
 
-                <Wrapper>
+                <WrapperCol>
                     <UpdateProfile
                         id={id}
                         name={name}
@@ -242,7 +257,7 @@ class Profile extends Component {
                         name={name}
                         history={this.props.history}
                     />
-                </Wrapper>
+                </WrapperCol>
             </Container>
         );
     };

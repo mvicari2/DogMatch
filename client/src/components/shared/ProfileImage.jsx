@@ -1,37 +1,14 @@
 import React, { Component } from 'react';
-import styled, { css } from 'styled-components';
 import 'react-infinite-calendar/styles.css';
 import Container from 'react-bootstrap/Container';
 import { FiUpload } from 'react-icons/fi';
 import Dropzone from 'react-dropzone';
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const RemoveImgButton = styled.a.attrs({
-    className: `btn btn-outline-warning btn-sm`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
-
-const Image = styled.img`    
-    max-width: 350px;
-    max-height: 350px;
-    width: auto;
-    height: auto;
-    text-align: center !important;
-`;
-
-const DropZoneContainer = styled.div`
-    height: 200px;
-    border: 2px dashed #2c67d8;
-    padding: 30px;
-
-    ${props => (props.isDragActive) && css`
-        border-color: green;
-    `};
-`;
+import {
+    Label,
+    SmallWarningButton,
+    Image,
+    DropZoneContainer
+} from '../../style/dog-styles';
 
 class ProfileImage extends Component {
     constructor(props) {
@@ -77,9 +54,9 @@ class ProfileImage extends Component {
                             <Label>Profile Picture Preview: </Label><br />
                             <Image src={profilePicUrl} alt='profile' />
                         </div>
-                        <RemoveImgButton onClick={this.handleRemoveImage}>
+                        <SmallWarningButton onClick={this.handleRemoveImage}>
                             Remove Image
-                        </RemoveImgButton>
+                        </SmallWarningButton>
                     </div>
                     : <div>
                         <Label>Upload Profile Picture: </Label> <br />

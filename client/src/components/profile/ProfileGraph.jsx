@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import '../../../node_modules/react-vis/dist/style.css';
+import { HeadingMedium } from '../../style/dog-styles';
 import {
     XYPlot,
     VerticalBarSeries,
@@ -13,12 +13,6 @@ import {
 
 const FlexibleXYPlot = makeWidthFlexible(XYPlot);
 
-const Label = styled.h3`
-    margin: 5px;
-    color: #616b61;
-    text-align: center;
-`;
-
 class ProfileGraph extends Component {
     constructor(props) {
         super(props)
@@ -30,8 +24,8 @@ class ProfileGraph extends Component {
         };
     };
 
-    componentDidMount = async () => {
-        const { temperament } = this.state;
+    componentDidMount = async () => { 
+        const temperament = this.state.temperament;
 
         // Set Doggo Scores (out of 100)
         //
@@ -193,7 +187,7 @@ class ProfileGraph extends Component {
 
         return (
             <React.Fragment>
-                <Label>Temperament and Personality Scores</Label>
+                <HeadingMedium>Temperament and Personality Scores</HeadingMedium>
                 <FlexibleXYPlot
                     height={400}
                     xType='ordinal'

@@ -1,23 +1,9 @@
 import React, { Component } from 'react';
-import styled, { css } from 'styled-components';
 import { FiUpload } from 'react-icons/fi';
 import Dropzone from 'react-dropzone';
+import { DropZoneContainer, Label } from '../../style/dog-styles';
 
 const maxSize = 5242880;
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const DropZoneContainer = styled.div`
-    height: 200px;
-    border: 2px dashed #2c67d8;
-    padding: 30px;
-
-    ${props => (props.isDragActive) && css`
-        border-color: green;
-    `};
-`;
 
 class AlbumDropContainer extends Component {
     constructor(props) {

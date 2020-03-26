@@ -1,42 +1,25 @@
 import React, { Component } from 'react';
 import api from '../../api';
-import styled from 'styled-components';
-import { withStyles } from '@material-ui/core/styles';
-import Rating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 import { Grid } from '@material-ui/core';
 import { IoMdPaw } from 'react-icons/io';
 import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import { TemperamentStepper } from '../../components';
+import ValidationMsg from '../../resources/Validation';
+import {
+    validateTemperament,
+    determineHasErrors,
+    resetValError
+} from '../../resources/Validation';
 
-const StyledRating = withStyles({
-    iconFilled: {
-        color: '#00468b',
-    },
-    iconHover: {
-        color: '#00468b',
-    },
-})(Rating);
-
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-lg-10',
-})`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const Button = styled.button.attrs({
-    className: `btn btn-primary`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
+import {
+    StyledRating,
+    Wrapper,
+    Label,
+    Button,
+    ErrorBorder
+} from '../../style/dog-styles';
 
 const labels = {
     1: 'Very Little',
@@ -81,28 +64,46 @@ class SectionSix extends Component {
             isPickyEaterHover: sectionSixData.isPickyEater,
             sheddingHover: sectionSixData.shedding,
             barkingHover: sectionSixData.barking,
-            smellRatingHover: sectionSixData.smellRating
+            smellRatingHover: sectionSixData.smellRating,
+            errors: {
+                isPickyEater: false,
+                shedding: false,
+                barking: false,
+                smellRating: false
+            }
         };
     };
 
     handleIsPickyEaterChange = async e => {
         const isPickyEater = parseInt(e.target.value);
-        this.setState({ isPickyEater });
+        var errors = this.state.errors;
+
+        errors.isPickyEater = await resetValError(isPickyEater);
+        this.setState({ isPickyEater, errors });
     };
 
     handleSheddingChange = async e => {
         const shedding = parseInt(e.target.value);
-        this.setState({ shedding });
+        var errors = this.state.errors;
+
+        errors.shedding = await resetValError(shedding);
+        this.setState({ shedding, errors });
     };
 
     handleBarkingChange = async e => {
         const barking = parseInt(e.target.value);
-        this.setState({ barking });
+        var errors = this.state.errors;
+
+        errors.barking = await resetValError(barking);
+        this.setState({ barking, errors });
     };
 
     handleSmellRatingChange = async e => {
         const smellRating = parseInt(e.target.value);
-        this.setState({ smellRating });
+        var errors = this.state.errors;
+
+        errors.smellRating = await resetValError(smellRating);
+        this.setState({ smellRating, errors });
     };
 
     // Rating Icon Hover Handlers
@@ -128,6 +129,47 @@ class SectionSix extends Component {
 
     sendSection = async newSection => {
         this.props.sendNewSection(newSection);
+    };
+
+    handleValidation = async direction => {
+        // get array of values from state
+        const values = await this.getValuesArray();
+
+        // validate values in array, returns errors
+        const errors = await validateTemperament(values);
+
+        // determine if there are greater than 0 validation errors
+        const hasErrors = await determineHasErrors(errors);
+
+        if (hasErrors) {
+            const nextErrorState = {
+                isPickyEater: errors[0],
+                shedding: errors[1],
+                barking: errors[2],
+                smellRating: errors[3]
+            };
+
+            this.props.showErrorAlert();
+            this.setState({ errors: nextErrorState });
+        } else {
+            if (direction === 'back') {
+                this.handleBackSection();
+            } else if (direction === 'next') {
+                this.handleNextSection();
+            };
+        };
+    };
+
+    getValuesArray = async () => {
+        const s = this.state;
+
+        const valuesArray = [
+            s.isPickyEater,
+            s.shedding,
+            s.barking,
+            s.smellRating
+        ];
+        return valuesArray;
     };
 
     handleBackSection = async () => {
@@ -214,6 +256,7 @@ class SectionSix extends Component {
             sheddingHover,
             barkingHover,
             smellRatingHover,
+            errors
         } = this.state;
 
 
@@ -240,23 +283,27 @@ class SectionSix extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='isPickyEaterRating'
-                                    value={isPickyEater}
-                                    onChange={this.handleIsPickyEaterChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleIsPickyEaterHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.isPickyEater && '1px solid red'}>
+                                    <StyledRating
+                                        name='isPickyEaterRating'
+                                        value={isPickyEater}
+                                        onChange={this.handleIsPickyEaterChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleIsPickyEaterHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[isPickyEaterHover !== -1
                                         ? isPickyEaterHover
                                         : isPickyEater
                                     ]}
                                 </Box>
+                                {errors.isPickyEater &&
+                                    <ValidationMsg field={'Picky Eater'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -272,23 +319,27 @@ class SectionSix extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='sheddingRating'
-                                    value={shedding}
-                                    onChange={this.handleSheddingChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleSheddingHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.shedding && '1px solid red'}>
+                                    <StyledRating
+                                        name='sheddingRating'
+                                        value={shedding}
+                                        onChange={this.handleSheddingChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleSheddingHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[sheddingHover !== -1
                                         ? sheddingHover
                                         : shedding
                                     ]}
                                 </Box>
+                                {errors.shedding &&
+                                    <ValidationMsg field={'Shedding'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -304,23 +355,27 @@ class SectionSix extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='barkingRating'
-                                    value={barking}
-                                    onChange={this.handleBarkingChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleBarkingHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.barking && '1px solid red'}>
+                                    <StyledRating
+                                        name='barkingRating'
+                                        value={barking}
+                                        onChange={this.handleBarkingChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleBarkingHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[barkingHover !== -1
                                         ? barkingHover
                                         : barking
                                     ]}
                                 </Box>
+                                {errors.barking &&
+                                    <ValidationMsg field={'Barking'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -336,23 +391,27 @@ class SectionSix extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='smellRatingRating'
-                                    value={smellRating}
-                                    onChange={this.handleSmellRatingChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleSmellRatingHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.smellRating && '1px solid red'}>
+                                    <StyledRating
+                                        name='smellRatingRating'
+                                        value={smellRating}
+                                        onChange={this.handleSmellRatingChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleSmellRatingHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[smellRatingHover !== -1
                                         ? smellRatingHover
                                         : smellRating
                                     ]}
                                 </Box>
+                                {errors.smellRating &&
+                                    <ValidationMsg field={'Smell Rating'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -365,8 +424,12 @@ class SectionSix extends Component {
 
                 <Wrapper>
                     <div>
-                        <Button onClick={this.handleBackSection}>Back</Button>
-                        <Button variant='contained' color='primary' onClick={this.handleNextSection}>
+                        <Button onClick={() => this.handleValidation('back')}>Back</Button>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            onClick={() => this.handleValidation('next')}
+                        >
                             Next Section
                         </Button>
                     </div>

@@ -3,6 +3,7 @@ const multer = require('multer');
 
 const DogController = require('../controllers/dog-controller');
 const TemperamentController = require('../controllers/temperament-controller');
+const MatchesController = require('../controllers/matches-controller');
 
 const router = express.Router();
 
@@ -23,6 +24,9 @@ router.put('/temperament/sectionFour/:id', TemperamentController.updateTemperame
 router.put('/temperament/sectionFive/:id', TemperamentController.updateTemperamentSectionFive);
 router.put('/temperament/sectionSix/:id', TemperamentController.updateTemperamentSectionSix);
 router.put('/temperament/sectionSeven/:id', TemperamentController.updateTemperamentSectionSeven);
+
+// Matches Controller Routes
+router.get('/matches/:id', MatchesController.getMatchesById);
 
 
 // multer storage for profile picture

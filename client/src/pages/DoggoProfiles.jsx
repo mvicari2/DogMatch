@@ -1,20 +1,15 @@
 import React, { Component } from 'react';
 import api from '../api';
-import styled from 'styled-components';
 import 'react-table/react-table.css';
 import Typography from '@material-ui/core/Typography';
 import 'typeface-roboto';
+import { WrapperDiv } from '../style/dog-styles';
 import {
     ProfilesTable,
     ProfilesCards,
     ProfilesFilter,
     Loading
 } from '../components';
-
-const Wrapper = styled.div`
-    padding: 0 5px 0 5px;
-    text-align: center;
-`;
 
 class DoggoProfiles extends Component {
     constructor(props) {
@@ -262,15 +257,15 @@ class DoggoProfiles extends Component {
         } = this.state;
 
         return (
-            <Wrapper>
+            <WrapperDiv>
                 <Typography gutterBottom variant='h2'>
                     Doggo Profiles
                 </Typography>
                 {isLoading
-                    ? <Wrapper>
+                    ? <WrapperDiv>
                         <Loading />
-                    </Wrapper>
-                    : <Wrapper>
+                    </WrapperDiv>
+                    : <WrapperDiv>
                         <ProfilesFilter
                             handleFilter={this.handleFilterProfiles}
                             clearFilter={this.handleClearFilter}
@@ -288,8 +283,8 @@ class DoggoProfiles extends Component {
                                 profiles={profiles}
                                 history={this.props.history}
                             />}                        
-                    </Wrapper>}                
-            </Wrapper>
+                    </WrapperDiv>}                
+            </WrapperDiv>
         );
     };
 };

@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
 import api from '../api';
-import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Typography from '@material-ui/core/Typography';
+import { IoMdPaw } from 'react-icons/io';
 import 'typeface-roboto';
+
+import {
+    Wrapper,
+    Button,
+    DangerAlert
+} from '../style/dog-styles';
+
 import {
     SectionOne,
     SectionTwo,
@@ -14,21 +21,6 @@ import {
     SectionSeven
 } from '../components';
 
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-lg-10',
-})`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Button = styled.button.attrs({
-    className: `btn btn-primary`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
-
 class TemperamentProfile extends Component {
     constructor(props) {
         super(props)
@@ -38,7 +30,8 @@ class TemperamentProfile extends Component {
         this.state = {
             id: this.props.match.params.id,
             name: '',
-            section: 1
+            section: 1,
+            hasErrors: false
         };
     };
 
@@ -149,6 +142,11 @@ class TemperamentProfile extends Component {
                 this.topOfPageRef.current.scrollIntoView({ behavior: 'smooth' });
             }, 50);
         };
+    };
+
+    handleErrorAlert = async () => {
+        this.setState({ hasErrors: true });
+        this.handleScroll();
     };
 
     handleNewSection = async newSection => {
@@ -384,8 +382,20 @@ class TemperamentProfile extends Component {
             sectionFourData,
             sectionFiveData,
             sectionSixData,
-            sectionSevenData
+            sectionSevenData,
+            hasErrors
         } = this.state;
+
+        const ValidationAlert = () => {
+            return (
+                hasErrors &&
+                <DangerAlert>
+                    <IoMdPaw />
+                    &nbsp;&nbsp; Please Fix the Errors: &nbsp;&nbsp;
+                    <IoMdPaw />
+                </DangerAlert>
+            );
+        };
 
         switch (section) {
             case 1:
@@ -395,14 +405,15 @@ class TemperamentProfile extends Component {
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
                             </Typography>
-                            {sectionOneData !== undefined
-                                ? <SectionOne
+                            <ValidationAlert />
+                            {sectionOneData !== undefined &&
+                                <SectionOne
                                     sectionOneData={sectionOneData}
                                     history={this.props.history}
                                     sectionNext={this.handleNext}
-                                    sendNewSection={this.handleNewSection}
-                                />
-                                : null}
+                                    sendNewSection={this.handleNewSection}                                    
+                                    showErrorAlert={this.handleErrorAlert}
+                                />}
                         </Wrapper>
                     </Container>
                 );
@@ -414,11 +425,13 @@ class TemperamentProfile extends Component {
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
                             </Typography>
+                            <ValidationAlert />
                             <SectionTwo
                                 sectionTwoData={sectionTwoData}
                                 sectionBack={this.handleBack}
                                 sectionNext={this.handleNext}
-                                sendNewSection={this.handleNewSection}
+                                sendNewSection={this.handleNewSection}                                
+                                showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
                     </Container>
@@ -431,11 +444,13 @@ class TemperamentProfile extends Component {
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
                             </Typography>
+                            <ValidationAlert />
                             <SectionThree
                                 sectionThreeData={sectionThreeData}
                                 sectionBack={this.handleBack}
                                 sectionNext={this.handleNext}
                                 sendNewSection={this.handleNewSection}
+                                showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
                     </Container>
@@ -448,11 +463,13 @@ class TemperamentProfile extends Component {
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
                             </Typography>
+                            <ValidationAlert />
                             <SectionFour
                                 sectionFourData={sectionFourData}
                                 sectionBack={this.handleBack}
                                 sectionNext={this.handleNext}
                                 sendNewSection={this.handleNewSection}
+                                showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
                     </Container>
@@ -465,11 +482,13 @@ class TemperamentProfile extends Component {
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
                             </Typography>
+                            <ValidationAlert />
                             <SectionFive
                                 sectionFiveData={sectionFiveData}
                                 sectionBack={this.handleBack}
                                 sectionNext={this.handleNext}
                                 sendNewSection={this.handleNewSection}
+                                showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
                     </Container>
@@ -482,11 +501,13 @@ class TemperamentProfile extends Component {
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
                             </Typography>
+                            <ValidationAlert />
                             <SectionSix
                                 sectionSixData={sectionSixData}
                                 sectionBack={this.handleBack}
                                 sectionNext={this.handleNext}
                                 sendNewSection={this.handleNewSection}
+                                showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
                     </Container>
@@ -499,11 +520,13 @@ class TemperamentProfile extends Component {
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
                             </Typography>
+                            <ValidationAlert />
                             <SectionSeven
                                 sectionSevenData={sectionSevenData}
                                 history={this.props.history}
                                 sectionBack={this.handleBack}
                                 sendNewSection={this.handleNewSection}
+                                showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
                     </Container>

@@ -1,20 +1,9 @@
 import React, { Component } from 'react';
 import api from '../../api';
-import styled from 'styled-components';
-import { makeStyles } from '@material-ui/core/styles';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import { IoMdPaw } from 'react-icons/io';
-
-const Wrapper = styled.div`      
-    text-align: center;
-`;
-
-const useStyles = makeStyles({
-    root: {
-        height: 80
-    },
-});
+import { TitleWrapper, UpdateNavStyles } from '../../style/dog-styles';
 
 class UpdateNavBar extends Component {
     constructor(props) {
@@ -60,7 +49,7 @@ class UpdateNavBar extends Component {
 
     NavContainer = () => {
         const { value } = this.state;
-        const classes = useStyles();
+        const classes = UpdateNavStyles();
         return (
             <BottomNavigation
                 value={value}
@@ -99,9 +88,9 @@ class UpdateNavBar extends Component {
     render() {
         return (
             <React.Fragment>
-                <Wrapper>
+                <TitleWrapper>
                     <this.NavContainer />
-                </Wrapper>
+                </TitleWrapper>
             </React.Fragment>
         );
     };

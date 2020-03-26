@@ -16,6 +16,7 @@ import Loading from './shared/Loading';
 import ProfileGraph from './profile/ProfileGraph';
 import BiographySection from './profile/BiographySection';
 import ProfileAlbum from './profile/ProfileAlbum';
+import Matches from './profile/Matches';
 
 // Update Profile Components
 import UpdateNavBar from './update/UpdateNavBar';
@@ -56,6 +57,7 @@ export {
     ProfileGraph,
     BiographySection,
     ProfileAlbum,
+    Matches,
 
     // Update Profile Components
     UpdateNavBar,

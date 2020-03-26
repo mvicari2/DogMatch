@@ -1,28 +1,14 @@
 import React, { Component } from 'react';
 import ReactTable from 'react-table';
 import api from '../../api';
-import styled from 'styled-components';
 import 'react-table/react-table.css';
 import Moment from 'react-moment';
-
-const Wrapper = styled.div`
-    padding: 0 40px 40px 40px;
-`;
-
-const Profile = styled.div`
-    color: green;
-    cursor: pointer;
-`;
-
-const Update = styled.div`
-    color: #ef9b0f;
-    cursor: pointer;
-`;
-
-const Delete = styled.div`
-    color: #ff0000;
-    cursor: pointer;
-`;
+import {
+    PaddedWrapper,
+    ProfileLink,
+    UpdateLink,
+    DeleteLink
+} from '../../style/dog-styles';
 
 class ViewProfile extends Component {
     viewProfile = e => {
@@ -31,7 +17,7 @@ class ViewProfile extends Component {
     };
 
     render() {
-        return <Profile onClick={this.viewProfile}>View Profile</Profile>
+        return <ProfileLink onClick={this.viewProfile}>View Profile</ProfileLink>
     };
 };
 
@@ -42,7 +28,7 @@ class UpdateDoggo extends Component {
     };
 
     render() {
-        return <Update onClick={this.updateProfile}>Update</Update>
+        return <UpdateLink onClick={this.updateProfile}>Update</UpdateLink>
     };
 };
 
@@ -61,7 +47,7 @@ class DeleteDoggo extends Component {
     };
 
     render = () => {
-        return <Delete onClick={this.deleteProfile}>Delete</Delete>
+        return <DeleteLink onClick={this.deleteProfile}>Delete</DeleteLink>
     };
 };
 
@@ -138,7 +124,7 @@ const ProfilesTable = (profiles) => {
     ];
 
     return (
-        <Wrapper>
+        <PaddedWrapper>
             <ReactTable
                 data={profiles.profiles}
                 noDataText='No Doggos Saved!'
@@ -148,7 +134,7 @@ const ProfilesTable = (profiles) => {
                 showPageSizeOptions={true}
                 minRows={5}
             />
-        </Wrapper>
+        </PaddedWrapper>
     );
 };
 

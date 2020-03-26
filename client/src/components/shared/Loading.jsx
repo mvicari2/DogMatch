@@ -1,31 +1,8 @@
 import React, { Component } from 'react';
-import styled, { keyframes } from 'styled-components';
-
-const BounceAnimation = keyframes`
-    0% { margin-bottom: 0; }
-    50% { margin-bottom: 15px }
-    100% { margin-bottom: 0 }
-`;
-
-const DotWrapper = styled.div`
-    display: flex;
-    align-items: flex-end;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-`;
-
-const Dot = styled.div`
-    text-align: center;
-    background-color: black;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    margin: 0 10px;
-    /* Animation */
-    animation: ${BounceAnimation} 0.5s linear infinite;
-    animation-delay: ${props => props.delay};
-`;
+import {
+    DotWrapper,
+    Dot
+} from '../../style/dog-styles';
 
 class Loading extends Component {
     render() {

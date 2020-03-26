@@ -37,7 +37,6 @@ export const uploadAlbum = albumFiles =>
     api.post(`uploadAlbum`, albumFiles);
 
 
-
 // Temperament Controller Requests
 export const updateSectionOneById = (id, payload) => 
     api.put(`/temperament/sectionOne/${id}`, payload);
@@ -60,6 +59,9 @@ export const updateSectionSixById = (id, payload) =>
 export const updateSectionSevenById = (id, payload) => 
     api.put(`/temperament/sectionSeven/${id}`, payload);
 
+// Matches Controller Requests
+export const getMatchesById = id => 
+    api.get(`/matches/${id}`);
 
 const apis = {
     // Dog Controller APIs
@@ -74,7 +76,7 @@ const apis = {
     uploadProfilePicture,
     uploadAlbum,
 
-    //Temperament Controller APIs
+    // Temperament Controller APIs
     updateSectionOneById,
     updateSectionTwoById,
     updateSectionThreeById,
@@ -82,6 +84,9 @@ const apis = {
     updateSectionFiveById,
     updateSectionSixById,
     updateSectionSevenById,
+
+    // Matches Controller APIs
+    getMatchesById
 };
 
 export default apis;

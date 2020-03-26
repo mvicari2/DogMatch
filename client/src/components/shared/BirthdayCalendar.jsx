@@ -1,43 +1,18 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import InfiniteCalendar from 'react-infinite-calendar';
 import 'react-infinite-calendar/styles.css';
 import Modal from 'react-modal';
 import Moment from 'react-moment';
 import Container from 'react-bootstrap/Container';
 import { FaBirthdayCake } from 'react-icons/fa';
+import { 
+    WrapperCol,
+    Label,
+    BirthdayStyle,
+    BirthdayButton
+ } from '../../style/dog-styles';
 
 Modal.setAppElement('#root');
-
-const birthdayStyle = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)'
-    }
-};
-
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-sm-8',
-})`    
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const BirthdayButton = styled.button.attrs({
-    className: `btn btn-outline-primary btn-sm`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
 
 class BirthdayCalendar extends Component {
     constructor(props) {
@@ -74,7 +49,7 @@ class BirthdayCalendar extends Component {
 
         return (
             <Container>
-                <Wrapper>
+                <WrapperCol>
                     
                     <Label>Birthday: {bday}</Label>
                     <br />                    
@@ -85,7 +60,7 @@ class BirthdayCalendar extends Component {
                             isOpen={this.state.modalIsOpen}
                             onAfterOpen={this.handleAfterOpenModal}
                             onRequestClose={this.handleCloseModal}
-                            style={birthdayStyle}
+                            style={BirthdayStyle}
                             contentLabel='Birthday Modal'
                         >
                             <h2 ref={subtitle => this.subtitle = subtitle}> </h2>
@@ -101,7 +76,7 @@ class BirthdayCalendar extends Component {
                                     }
                                 } />
                         </Modal>                    
-                </Wrapper>
+                </WrapperCol>
             </Container>
         );
     };

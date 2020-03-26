@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -13,79 +12,22 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-modal';
 import { IoIosClose } from 'react-icons/io';
+import {
+    FilterStyle,
+    Radios,
+    WrapperCol,
+    Label,
+    SearchLabel,
+    SmallButton,
+    SmallDangerButton,
+    CloseModalIcon,
+    FilterRow,
+    InputWrapper
+} from '../../style/dog-styles';
 
 Modal.setAppElement('#root');
 const animatedComponents = makeAnimated();
-
-const filterStyle = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-        width: '90%',
-        maxHeight: '90%'
-    }
-};
-
-const Radios = styled.div`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-sm-8',
-})`    
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const SearchLabel = styled.label`
-    margin: 5px;
-    margin-top: 15px
-    display: inline;
-`;
-
-const Button = styled.button.attrs({
-    className: `btn btn-outline-primary btn-sm`,
-})`
-    margin: 15px 15px 15px 5px;
-    display: inline;
-`;
-
-const ClearButton = styled.button.attrs({
-    className: `btn btn-outline-danger btn-sm`,
-})`
-    margin: 15px 15px 15px 5px;
-    display: inline;
-`;
-
-const CloseModalIcon = styled.div`
-    margin: 5px;   
-    text-align: right; 
-`;
-
-const FilterRow = styled.div.attrs({
-    className: 'form-group row justify-content-center',
-})`
-    max-width: 100%;
-    margin-top: -20px;
-`;
-
-const InputWrapper = styled.span`
-    display: block;
-    margin-right: 10px;
-    margin-top: 15px;    
-`;
+const filterStyle = FilterStyle;
 
 class ProfilesFilter extends Component {
     constructor(props) {
@@ -264,9 +206,9 @@ class ProfilesFilter extends Component {
                         />
                     </InputWrapper>
 
-                    <Button onClick={this.handleSubmitSearch}>
+                    <SmallButton onClick={this.handleSubmitSearch}>
                         Search
-                    </Button>
+                    </SmallButton>
 
                     <FormControlLabel
                         control={<Checkbox color='primary' />}
@@ -275,31 +217,29 @@ class ProfilesFilter extends Component {
                         onChange={this.handleIncludeBioChange}
                     />
 
-                    {showingResults
-                        ? <ClearButton onClick={this.handleClearSearch}>
+                    {showingResults &&
+                        <SmallDangerButton onClick={this.handleClearSearch}>
                             Clear Search
-                            </ClearButton>
-                        : null}
+                        </SmallDangerButton>}
                 </FilterRow>
 
                 <FilterRow>
                     {showTable
-                        ? <Button onClick={this.handleSwitchProfiles}>
+                        ? <SmallButton onClick={this.handleSwitchProfiles}>
                             Show Profiles as Cards
-                            </Button>
-                        : <Button onClick={this.handleSwitchProfiles}>
+                            </SmallButton>
+                        : <SmallButton onClick={this.handleSwitchProfiles}>
                             Show Profiles as Table
-                            </Button>}
+                            </SmallButton>}
 
-                    <Button onClick={this.handleOpenModal}>
+                    <SmallButton onClick={this.handleOpenModal}>
                         Filter Profiles
-                        </Button>
+                        </SmallButton>
 
-                    {isFiltered
-                        ? <ClearButton onClick={this.handleClearFilter}>
+                    {isFiltered &&
+                        <SmallDangerButton onClick={this.handleClearFilter}>
                             Clear Filter
-                            </ClearButton>
-                        : null}
+                        </SmallDangerButton>}
                 </FilterRow>
 
                 <Modal
@@ -316,7 +256,7 @@ class ProfilesFilter extends Component {
                             size={30}
                         />
                     </CloseModalIcon>
-                    <Wrapper>
+                    <WrapperCol>
                         <Row>
                             <Col sm={true}>
                                 <Label>Age Range Start: </Label>
@@ -387,12 +327,10 @@ class ProfilesFilter extends Component {
                         <Divider />
                         <br />
 
-                        {filterParams.orderBy !== '0'
-                            ?
+                        {filterParams.orderBy !== '0' &&                            
                             <Row>
                                 <Col sm={true}>
-                                    {filterParams.orderBy === '1'
-                                        ?
+                                    {filterParams.orderBy === '1' &&
                                         <div>
                                             <Label>Order Ages: </Label>
                                             <RadioGroup
@@ -416,11 +354,9 @@ class ProfilesFilter extends Component {
                                                     />
                                                 </Radios>
                                             </RadioGroup>
-                                        </div>
-                                        : null}
+                                        </div>}
 
-                                    {filterParams.orderBy === '2'
-                                        ?
+                                    {filterParams.orderBy === '2' &&
                                         <div>
                                             <Label>Order Names: </Label>
                                             <RadioGroup
@@ -444,11 +380,9 @@ class ProfilesFilter extends Component {
                                                     />
                                                 </Radios>
                                             </RadioGroup>
-                                        </div>
-                                        : null}
+                                        </div>}
 
-                                    {filterParams.orderBy === '3'
-                                        ?
+                                    {filterParams.orderBy === '3' &&
                                         <div>
                                             <Label>Order Breeds: </Label>
                                             <RadioGroup
@@ -472,11 +406,9 @@ class ProfilesFilter extends Component {
                                                     />
                                                 </Radios>
                                             </RadioGroup>
-                                        </div>
-                                        : null}
+                                        </div>}
 
-                                    {filterParams.orderBy === '4'
-                                        ?
+                                    {filterParams.orderBy === '4' &&                                        
                                         <div>
                                             <Label>Order Weights: </Label>
                                             <RadioGroup
@@ -500,15 +432,11 @@ class ProfilesFilter extends Component {
                                                     />
                                                 </Radios>
                                             </RadioGroup>
-                                        </div>
-                                        : null}
+                                        </div>}
                                 </Col>
-                            </Row>
-                            : null}
+                            </Row>}
 
-                        {filterParams.orderBy !== '0'
-                            ? <Divider />
-                            : null}
+                        {filterParams.orderBy !== '0' && <Divider />}
 
                         <Row>
                             <Col sm={true}>
@@ -536,9 +464,9 @@ class ProfilesFilter extends Component {
                                 </RadioGroup>
                             </Col>
                         </Row>
-                        <Button onClick={this.handleSubmitFilter}>Filter Profiles</Button>
-                        <ClearButton onClick={this.handleClearFilter}>Clear Filter</ClearButton>
-                    </Wrapper>
+                        <SmallButton onClick={this.handleSubmitFilter}>Filter Profiles</SmallButton>
+                        <SmallDangerButton onClick={this.handleClearFilter}>Clear Filter</SmallDangerButton>
+                    </WrapperCol>
                 </Modal>
             </React.Fragment>
         );

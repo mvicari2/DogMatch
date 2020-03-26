@@ -1,20 +1,12 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
 import ResponsiveMenu from 'react-responsive-navbar';
 import { IoIosArrowDown, IoMdClose } from 'react-icons/io';
-
-const Collapse = styled.div.attrs({
-    className: 'collpase navbar-collapse',
-})``;
-
-const List = styled.div.attrs({
-    className: 'navbar-nav mr-auto',
-})``;
-
-const Item = styled.div.attrs({
-    className: 'collpase navbar-collapse',
-})``;
+import {
+    Collapse,
+    List,
+    Item
+} from '../../style/dog-styles';
 
 class Links extends Component {
     render() {

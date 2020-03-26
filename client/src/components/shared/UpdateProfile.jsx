@@ -1,11 +1,5 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
-
-const Button = styled.button.attrs({
-    className: `btn btn-primary`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
+import { Button } from '../../style/dog-styles';
 
 class UpdateProfile extends Component {
     updateProfile = e => {

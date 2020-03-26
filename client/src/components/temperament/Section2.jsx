@@ -1,42 +1,25 @@
 import React, { Component } from 'react';
 import api from '../../api';
-import styled from 'styled-components';
-import { withStyles } from '@material-ui/core/styles';
-import Rating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 import { Grid } from '@material-ui/core';
 import { IoMdPaw } from 'react-icons/io';
 import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import { TemperamentStepper } from '../../components';
+import ValidationMsg from '../../resources/Validation';
+import {
+    determineHasErrors,
+    validateTemperament,
+    resetValError
+} from '../../resources/Validation';
 
-const StyledRating = withStyles({
-    iconFilled: {
-        color: '#00468b',
-    },
-    iconHover: {
-        color: '#00468b',
-    },
-})(Rating);
-
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-lg-10',
-})`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const Button = styled.button.attrs({
-    className: `btn btn-primary`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
+import {
+    StyledRating,
+    Wrapper,
+    Label,
+    Button,
+    ErrorBorder
+} from '../../style/dog-styles';
 
 const labels = {
     1: 'Very Little',
@@ -85,38 +68,64 @@ class SectionTwo extends Component {
             goodWithOtherDogsHover: sectionTwoData.goodWithOtherDogs,
             goodWithCatsHover: sectionTwoData.goodWithCats,
             goodWithOtherAnimalsHover: sectionTwoData.goodWithOtherAnimals,
-            goodWithChildrenHover: sectionTwoData.goodWithChildren
+            goodWithChildrenHover: sectionTwoData.goodWithChildren,
+            errors: {
+                friendlinessOverall: false,
+                goodWithPeople: false,
+                goodWithOtherDogs: false,
+                goodWithCats: false,
+                goodWithOtherAnimals: false,
+                goodWithChildren: false
+            }
         };
     };
 
     handleFriendlinessOverallChange = async e => {
         const friendlinessOverall = parseInt(e.target.value);
-        this.setState({ friendlinessOverall });
+        var errors = this.state.errors;
+
+        errors.friendlinessOverall = await resetValError(friendlinessOverall);
+        this.setState({ friendlinessOverall, errors });
     };
 
     handleGoodWithPeopleChange = async e => {
         const goodWithPeople = parseInt(e.target.value);
-        this.setState({ goodWithPeople });
+        var errors = this.state.errors;
+
+        errors.goodWithPeople = await resetValError(goodWithPeople);        
+        this.setState({ goodWithPeople, errors });
     };
 
     handleGoodWithOtherDogsChange = async e => {
         const goodWithOtherDogs = parseInt(e.target.value);
-        this.setState({ goodWithOtherDogs });
+        var errors = this.state.errors;
+
+        errors.goodWithOtherDogs = await resetValError(goodWithOtherDogs);
+        this.setState({ goodWithOtherDogs, errors });
     };
 
     handleGoodWithCatsChange = async e => {
         const goodWithCats = parseInt(e.target.value);
-        this.setState({ goodWithCats });
+        var errors = this.state.errors;
+
+        errors.goodWithCats = await resetValError(goodWithCats);
+        this.setState({ goodWithCats, errors });
     };
 
     handleGoodWithOtherAnimalsChange = async e => {
         const goodWithOtherAnimals = parseInt(e.target.value);
-        this.setState({ goodWithOtherAnimals });
+        var errors = this.state.errors;
+
+        errors.goodWithOtherAnimals = await resetValError(goodWithOtherAnimals);
+        this.setState({ goodWithOtherAnimals, errors });
     };
 
     handleGoodWithChildrenChange = async e => {
         const goodWithChildren = parseInt(e.target.value);
-        this.setState({ goodWithChildren });
+        var errors = this.state.errors;
+
+        errors.goodWithChildren = await resetValError(goodWithChildren);
+        this.setState({ goodWithChildren, errors });
     };
 
     // Rating Icon Hover Handlers
@@ -152,6 +161,53 @@ class SectionTwo extends Component {
 
     sendSection = async newSection => {
         this.props.sendNewSection(newSection);
+    };
+
+    handleValidation = async direction => {
+        // get array of values from state
+        const values = await this.getValuesArray();
+
+        // validate values in array, returns errors
+        const errors = await validateTemperament(values);
+
+        // determine if there are greater than 0 validation errors
+        const hasErrors = await determineHasErrors(errors);
+
+
+        if (hasErrors) {
+            const nextErrorState = {
+                friendlinessOverall: errors[0],
+                goodWithPeople: errors[1],
+                goodWithOtherDogs: errors[2],
+                goodWithCats: errors[3],
+                goodWithOtherAnimals: errors[4],
+                goodWithChildren: errors[5]
+            };
+
+            // show alert at top of view (in parent)
+            this.props.showErrorAlert();
+            this.setState({ errors: nextErrorState });
+        } else {
+            if (direction === 'back') {
+                this.handleBackSection();
+            } else if (direction === 'next') {
+                this.handleNextSection();
+            };
+        };
+    };
+
+    getValuesArray = async () => {
+        const s = this.state;
+
+        const valuesArray = [
+            s.friendlinessOverall,
+            s.goodWithPeople,
+            s.goodWithOtherDogs,
+            s.goodWithCats,
+            s.goodWithOtherAnimals,
+            s.goodWithChildren
+        ];
+        return valuesArray;
     };
 
     handleBackSection = async () => {
@@ -253,7 +309,8 @@ class SectionTwo extends Component {
             goodWithOtherDogsHover,
             goodWithCatsHover,
             goodWithOtherAnimalsHover,
-            goodWithChildrenHover
+            goodWithChildrenHover,
+            errors
         } = this.state;
 
 
@@ -280,23 +337,27 @@ class SectionTwo extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='friendlinessOverallRating'
-                                    value={friendlinessOverall}
-                                    onChange={this.handleFriendlinessOverallChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleFriendlinessOverallHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.friendlinessOverall && '1px solid red'}>
+                                    <StyledRating
+                                        name='friendlinessOverallRating'
+                                        value={friendlinessOverall}
+                                        onChange={this.handleFriendlinessOverallChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleFriendlinessOverallHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[friendlinessOverallHover !== -1
                                         ? friendlinessOverallHover
                                         : friendlinessOverall
                                     ]}
                                 </Box>
+                                {errors.friendlinessOverall &&
+                                    <ValidationMsg field={'Overall Friendliness'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -312,23 +373,27 @@ class SectionTwo extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='goodWithPeopleRating'
-                                    value={goodWithPeople}
-                                    onChange={this.handleGoodWithPeopleChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleGoodWithPeopleHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.goodWithPeople && '1px solid red'}>
+                                    <StyledRating
+                                        name='goodWithPeopleRating'
+                                        value={goodWithPeople}
+                                        onChange={this.handleGoodWithPeopleChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleGoodWithPeopleHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[goodWithPeopleHover !== -1
                                         ? goodWithPeopleHover
                                         : goodWithPeople
                                     ]}
                                 </Box>
+                                {errors.goodWithPeople &&
+                                    <ValidationMsg field={'Good with People'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -344,23 +409,27 @@ class SectionTwo extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='goodWithOtherDogsRating'
-                                    value={goodWithOtherDogs}
-                                    onChange={this.handleGoodWithOtherDogsChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleGoodWithOtherDogsHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.goodWithOtherDogs && '1px solid red'}>
+                                    <StyledRating
+                                        name='goodWithOtherDogsRating'
+                                        value={goodWithOtherDogs}
+                                        onChange={this.handleGoodWithOtherDogsChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleGoodWithOtherDogsHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[goodWithOtherDogsHover !== -1
                                         ? goodWithOtherDogsHover
                                         : goodWithOtherDogs
                                     ]}
                                 </Box>
+                                {errors.goodWithOtherDogs &&
+                                    <ValidationMsg field={'Good with Other Dogs'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -376,23 +445,27 @@ class SectionTwo extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='goodWithCatsRating'
-                                    value={goodWithCats}
-                                    onChange={this.handleGoodWithCatsChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleGoodWithCatsHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.goodWithCats && '1px solid red'}>
+                                    <StyledRating
+                                        name='goodWithCatsRating'
+                                        value={goodWithCats}
+                                        onChange={this.handleGoodWithCatsChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleGoodWithCatsHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[goodWithCatsHover !== -1
                                         ? goodWithCatsHover
                                         : goodWithCats
                                     ]}
                                 </Box>
+                                {errors.goodWithCats &&
+                                    <ValidationMsg field={'Good with Cats'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -408,23 +481,27 @@ class SectionTwo extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='goodWithOtherAnimalsRating'
-                                    value={goodWithOtherAnimals}
-                                    onChange={this.handleGoodWithOtherAnimalsChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleGoodWithOtherAnimalsHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.goodWithOtherAnimals && '1px solid red'}>
+                                    <StyledRating
+                                        name='goodWithOtherAnimalsRating'
+                                        value={goodWithOtherAnimals}
+                                        onChange={this.handleGoodWithOtherAnimalsChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleGoodWithOtherAnimalsHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[goodWithOtherAnimalsHover !== -1
                                         ? goodWithOtherAnimalsHover
                                         : goodWithOtherAnimals
                                     ]}
                                 </Box>
+                                {errors.goodWithOtherAnimals &&
+                                    <ValidationMsg field={'Good with Other Animals'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -440,23 +517,27 @@ class SectionTwo extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='goodWithChildrenRating'
-                                    value={goodWithChildren}
-                                    onChange={this.handleGoodWithChildrenChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleGoodWithChildrenHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.goodWithChildren && '1px solid red'}>
+                                    <StyledRating
+                                        name='goodWithChildrenRating'
+                                        value={goodWithChildren}
+                                        onChange={this.handleGoodWithChildrenChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleGoodWithChildrenHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[goodWithChildrenHover !== -1
                                         ? goodWithChildrenHover
                                         : goodWithChildren
                                     ]}
                                 </Box>
+                                {errors.goodWithChildren &&
+                                    <ValidationMsg field={'Good with Children'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -469,8 +550,8 @@ class SectionTwo extends Component {
 
                 <Wrapper>
                     <div>
-                        <Button onClick={this.handleBackSection}>Back</Button>
-                        <Button variant='contained' color='primary' onClick={this.handleNextSection}>
+                        <Button onClick={() => this.handleValidation('back')}>Back</Button>
+                        <Button variant='contained' color='primary' onClick={() => this.handleValidation('next')}>
                             Next Section
                         </Button>
                     </div>

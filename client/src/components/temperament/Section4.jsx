@@ -1,42 +1,25 @@
 import React, { Component } from 'react';
 import api from '../../api';
-import styled from 'styled-components';
-import { withStyles } from '@material-ui/core/styles';
-import Rating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 import { Grid } from '@material-ui/core';
 import { IoMdPaw } from 'react-icons/io';
 import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import { TemperamentStepper } from '../../components';
+import ValidationMsg from '../../resources/Validation';
+import {
+    validateTemperament,
+    determineHasErrors,
+    resetValError
+} from '../../resources/Validation';
 
-const StyledRating = withStyles({
-    iconFilled: {
-        color: '#00468b',
-    },
-    iconHover: {
-        color: '#00468b',
-    },
-})(Rating);
-
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-lg-10',
-})`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const Button = styled.button.attrs({
-    className: `btn btn-primary`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
+import {
+    StyledRating,
+    Wrapper,
+    Label,
+    Button,
+    ErrorBorder
+} from '../../style/dog-styles';
 
 const labels = {
     1: 'Very Little',
@@ -85,38 +68,64 @@ class SectionThree extends Component {
             trainingLevelHover: sectionFourData.trainingLevel,
             trainabilityHover: sectionFourData.trainability,
             stubbornnessHover: sectionFourData.stubbornness,
-            intelligenceHover: sectionFourData.intelligence
+            intelligenceHover: sectionFourData.intelligence,
+            errors: {
+                athleticLevel: false,
+                likesExcersize: false,
+                trainingLevel: false,
+                trainability: false,
+                stubbornness: false,
+                intelligence: false
+            }
         };
     };
 
     handleAthleticLevelChange = async e => {
         const athleticLevel = parseInt(e.target.value);
-        this.setState({ athleticLevel });
+        var errors = this.state.errors;
+
+        errors.athleticLevel = await resetValError(athleticLevel);
+        this.setState({ athleticLevel, errors });
     };
 
     handleLikesExcersizeChange = async e => {
         const likesExcersize = parseInt(e.target.value);
-        this.setState({ likesExcersize });
+        var errors = this.state.errors;
+
+        errors.likesExcersize = await resetValError(likesExcersize);
+        this.setState({ likesExcersize, errors });
     };
 
     handleTrainingLevelChange = async e => {
         const trainingLevel = parseInt(e.target.value);
-        this.setState({ trainingLevel });
+        var errors = this.state.errors;
+
+        errors.trainingLevel = await resetValError(trainingLevel);
+        this.setState({ trainingLevel, errors });
     };
 
     handleTrainabilityChange = async e => {
         const trainability = parseInt(e.target.value);
-        this.setState({ trainability });
+        var errors = this.state.errors;
+
+        errors.trainability = await resetValError(trainability);
+        this.setState({ trainability, errors });
     };
 
     handleStubbornnessChange = async e => {
         const stubbornness = parseInt(e.target.value);
-        this.setState({ stubbornness });
+        var errors = this.state.errors;
+
+        errors.stubbornness = await resetValError(stubbornness);
+        this.setState({ stubbornness, errors });
     };
 
     handleIntelligenceChange = async e => {
         const intelligence = parseInt(e.target.value);
-        this.setState({ intelligence });
+        var errors = this.state.errors;
+
+        errors.intelligence = await resetValError(intelligence);
+        this.setState({ intelligence, errors });
     };
 
     // Rating Icon Hover Handlers
@@ -153,7 +162,54 @@ class SectionThree extends Component {
     sendSection = async newSection => {
         this.props.sendNewSection(newSection);
     };
-    
+
+    handleValidation = async direction => {
+        // get array of values from state
+        const values = await this.getValuesArray();
+
+        // validate values in array, returns errors
+        const errors = await validateTemperament(values);
+
+        // determine if there are greater than 0 validation errors
+        const hasErrors = await determineHasErrors(errors);
+
+        if (hasErrors) {
+            const nextErrorsState = {
+                athleticLevel: errors[0],
+                likesExcersize: errors[1],
+                trainingLevel: errors[2],
+                trainability: errors[3],
+                stubbornness: errors[4],
+                intelligence: errors[5]
+            };
+
+            // show error alert on top of parent
+            this.props.showErrorAlert();
+            this.setState({ errors: nextErrorsState });
+        } else {
+            if (direction === 'back') {
+                this.handleBackSection();
+            } else if (direction === 'next') {
+                this.handleNextSection();
+            };
+        };
+    };
+
+    getValuesArray = async () => {
+        const s = this.state;
+
+        const valuesArray = [
+            s.athleticLevel,
+            s.likesExcersize,
+            s.trainingLevel,
+            s.trainability,
+            s.stubbornness,
+            s.intelligence
+        ];
+
+        return valuesArray;
+    }
+
     handleBackSection = async () => {
         const {
             id,
@@ -253,7 +309,8 @@ class SectionThree extends Component {
             trainingLevelHover,
             trainabilityHover,
             stubbornnessHover,
-            intelligenceHover
+            intelligenceHover,
+            errors
         } = this.state;
 
 
@@ -280,23 +337,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='athleticLevelRating'
-                                    value={athleticLevel}
-                                    onChange={this.handleAthleticLevelChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleAthleticLevelHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.athleticLevel && '1px solid red'} id='stupid'>
+                                    <StyledRating
+                                        name='athleticLevelRating'
+                                        value={athleticLevel}
+                                        onChange={this.handleAthleticLevelChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleAthleticLevelHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[athleticLevelHover !== -1
                                         ? athleticLevelHover
                                         : athleticLevel
                                     ]}
                                 </Box>
+                                {errors.athleticLevel &&
+                                    <ValidationMsg field={'Athletic'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -312,23 +373,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='likesExcersizeRating'
-                                    value={likesExcersize}
-                                    onChange={this.handleLikesExcersizeChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleLikesExcersizeHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.likesExcersize && '1px solid red'}>
+                                    <StyledRating
+                                        name='likesExcersizeRating'
+                                        value={likesExcersize}
+                                        onChange={this.handleLikesExcersizeChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleLikesExcersizeHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[likesExcersizeHover !== -1
                                         ? likesExcersizeHover
                                         : likesExcersize
                                     ]}
                                 </Box>
+                                {errors.likesExcersize &&
+                                    <ValidationMsg field={'Enjoys Excersize'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -344,23 +409,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='likesPlayingDogsRating'
-                                    value={trainingLevel}
-                                    onChange={this.handleTrainingLevelChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleTrainingLevelHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.trainingLevel && '1px solid red'}>
+                                    <StyledRating
+                                        name='likesPlayingDogsRating'
+                                        value={trainingLevel}
+                                        onChange={this.handleTrainingLevelChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleTrainingLevelHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[trainingLevelHover !== -1
                                         ? trainingLevelHover
                                         : trainingLevel
                                     ]}
                                 </Box>
+                                {errors.trainingLevel &&
+                                    <ValidationMsg field={'Training Level'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -376,23 +445,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='trainabilityRating'
-                                    value={trainability}
-                                    onChange={this.handleTrainabilityChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleTrainabilityHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.trainability && '1px solid red'}>
+                                    <StyledRating
+                                        name='trainabilityRating'
+                                        value={trainability}
+                                        onChange={this.handleTrainabilityChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleTrainabilityHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[trainabilityHover !== -1
                                         ? trainabilityHover
                                         : trainability
                                     ]}
                                 </Box>
+                                {errors.trainability &&
+                                    <ValidationMsg field={'Trainability'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -408,23 +481,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='stubbornnessRating'
-                                    value={stubbornness}
-                                    onChange={this.handleStubbornnessChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleStubbornnessHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.stubbornness && '1px solid red'}>
+                                    <StyledRating
+                                        name='stubbornnessRating'
+                                        value={stubbornness}
+                                        onChange={this.handleStubbornnessChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleStubbornnessHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[stubbornnessHover !== -1
                                         ? stubbornnessHover
                                         : stubbornness
                                     ]}
                                 </Box>
+                                {errors.stubbornness &&
+                                    <ValidationMsg field={'Subbornness'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -440,23 +517,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='intelligenceRating'
-                                    value={intelligence}
-                                    onChange={this.handleIntelligenceChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleIntelligenceHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.intelligence && '1px solid red'}>
+                                    <StyledRating
+                                        name='intelligenceRating'
+                                        value={intelligence}
+                                        onChange={this.handleIntelligenceChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleIntelligenceHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[intelligenceHover !== -1
                                         ? intelligenceHover
                                         : intelligence
                                     ]}
                                 </Box>
+                                {errors.intelligence &&
+                                    <ValidationMsg field={'Intelligence'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -469,8 +550,8 @@ class SectionThree extends Component {
 
                 <Wrapper>
                     <div>
-                        <Button onClick={this.handleBackSection}>Back</Button>
-                        <Button variant='contained' color='primary' onClick={this.handleNextSection}>
+                        <Button onClick={() => this.handleValidation('back')}>Back</Button>
+                        <Button variant='contained' color='primary' onClick={() => this.handleValidation('next')}>
                             Next Section
                         </Button>
                     </div>

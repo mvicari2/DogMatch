@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import Row from 'react-bootstrap/Row';
@@ -8,25 +7,15 @@ import resources from '../../resources/resources';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ValidationMsg from '../../resources/Validation';
+import {
+    Label,
+    InputText,
+    Radios,
+    ErrorBorder
+} from '../../style/dog-styles';
 
 const animatedComponents = makeAnimated();
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const InputText = styled.input.attrs({
-    className: 'form-control',
-})`
-    margin: 5px;
-`;
-
-const Radios = styled.div`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
 
 class BasicProfile extends Component {
     constructor(props) {
@@ -96,6 +85,7 @@ class BasicProfile extends Component {
 
     render() {
         const { basicProfileData } = this.state;
+        const errors = this.props.errors;
 
         return (
             <React.Fragment>
@@ -106,7 +96,9 @@ class BasicProfile extends Component {
                             type='text'
                             value={basicProfileData.name}
                             onChange={this.handleNameChange}
+                            border={errors.name && '1px solid red'}
                         />
+                        {errors.name && <ValidationMsg field={'Name'} />}
                     </Col>
                     <Col sm={true}>
                         <Label>Breed: </Label>
@@ -114,7 +106,9 @@ class BasicProfile extends Component {
                             type='text'
                             value={basicProfileData.breed}
                             onChange={this.handleBreedChange}
+                            border={errors.breed && '1px solid red'}
                         />
+                        {errors.breed && <ValidationMsg field={'Breed'} />}
                     </Col>
                 </Row>
                 <Row>
@@ -126,7 +120,13 @@ class BasicProfile extends Component {
                             options={resources.colorSelect}
                             value={basicProfileData.color || ''}
                             onChange={this.handleColorChange}
+                            styles={{
+                                control: (styles) => (errors.color ? {
+                                    ...styles, borderColor: '#ff0000',
+                                } : styles)
+                            }}
                         />
+                        {errors.color && <ValidationMsg field={'Color'} />}
                     </Col>
                     <Col sm={true}>
                         <Label>Age: </Label>
@@ -139,7 +139,9 @@ class BasicProfile extends Component {
                             pattern='[0-9]+([,\.][0-9]+)?'
                             value={basicProfileData.age}
                             onChange={this.handleAgeChange}
+                            border={errors.age && '1px solid red'}
                         />
+                        {errors.age && <ValidationMsg field={'Age'} />}
                     </Col>
                 </Row>
                 <Row>
@@ -154,31 +156,36 @@ class BasicProfile extends Component {
                             pattern='[0-9]+([,\.][0-9]+)?'
                             value={basicProfileData.weight}
                             onChange={this.handleWeightChange}
+                            border={errors.weight && '1px solid red'}
                         />
+                        {errors.weight && <ValidationMsg field={'Weight'} />}
                     </Col>
                     <Col sm={true}>
                         <Label>Gender: </Label>
-                        <RadioGroup
-                            name='genderRadio'
-                            value={basicProfileData.gender}
-                            onChange={this.handleGenderChange}
-                            row
-                        >
-                            <Radios>
-                                <FormControlLabel
-                                    value='female'
-                                    control={<Radio color='primary' />}
-                                    label='Good Girl'
-                                    labelPlacement='bottom'
-                                />
-                                <FormControlLabel
-                                    value='male'
-                                    control={<Radio color='primary' />}
-                                    label='Good Boy'
-                                    labelPlacement='bottom'
-                                />
-                            </Radios>
-                        </RadioGroup>
+                        <ErrorBorder border={errors.gender && '1px solid red'}>
+                            <RadioGroup
+                                name='genderRadio'
+                                value={basicProfileData.gender}
+                                onChange={this.handleGenderChange}
+                                row
+                            >
+                                <Radios>
+                                    <FormControlLabel
+                                        value='female'
+                                        control={<Radio color='primary' />}
+                                        label='Good Girl'
+                                        labelPlacement='bottom'
+                                    />
+                                    <FormControlLabel
+                                        value='male'
+                                        control={<Radio color='primary' />}
+                                        label='Good Boy'
+                                        labelPlacement='bottom'
+                                    />
+                                </Radios>
+                            </RadioGroup>
+                        </ErrorBorder>
+                        {errors.gender && <ValidationMsg field={'Gender'} />}
                     </Col>
                 </Row>
             </React.Fragment>

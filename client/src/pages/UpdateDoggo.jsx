@@ -1,11 +1,20 @@
 import React, { Component } from 'react';
 import api from '../api';
-import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import axios from 'axios';
 import config from '../config/config';
 import Typography from '@material-ui/core/Typography';
 import 'typeface-roboto';
+import { IoMdPaw } from 'react-icons/io';
+import { validateBasicProfile, getBasicProfArr } from '../resources/Validation';
+
+import {
+    WrapperCol,
+    Button,
+    TitleWrapper,
+    DangerAlert
+} from '../style/dog-styles';
+
 import {
     UpdateNavBar,
     BirthdayCalendar,
@@ -13,28 +22,11 @@ import {
     BasicProfile
 } from '../components';
 
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-sm-8',
-})`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Button = styled.button.attrs({
-    className: `btn btn-primary`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
-
-const TitleWrapper = styled.div`
-    text-align: center;
-`;
-
 class UpdateDoggo extends Component {
     constructor(props) {
         super(props)
+
+        this.topOfPageRef = React.createRef();
 
         this.state = {
             id: this.props.match.params.id,
@@ -42,7 +34,16 @@ class UpdateDoggo extends Component {
             basicProfileData: {},
             profilePicture: null,
             fileName: '',
-            profilePicUrl: ''
+            profilePicUrl: '',
+            errors: {
+                name: false,
+                breed: false,
+                color: false,
+                age: false,
+                weight: false,
+                gender: false
+            },
+            hasErrors: false,
         };
     };
 
@@ -105,6 +106,29 @@ class UpdateDoggo extends Component {
         });
     };
 
+    handleScroll = () => {
+        const { index, selected } = this.props;
+        if (index === selected) {
+            setTimeout(() => {
+                this.topOfPageRef.current.scrollIntoView({ behavior: 'smooth' });
+            }, 50);
+        };
+    };
+
+    handleSubmitDoggo = async () => {
+        // validate model
+        const stateArray = await getBasicProfArr(this.state.basicProfileData);
+        const errors = await validateBasicProfile(stateArray);
+
+        if (errors.name || errors.breed || errors.color
+            || errors.age || errors.weight || errors.gender) {
+            this.setState({ errors, hasErrors: true });
+            this.handleScroll();
+        } else {
+            this.handleUpdateDoggo();
+        };
+    };
+
     handleUpdateDoggo = async () => {
         // post profile picture, return filename
         if (this.state.profilePicture !== null) {
@@ -152,53 +176,74 @@ class UpdateDoggo extends Component {
     };
 
     render() {
-        const { id, name, basicProfileData, birthday, profilePicUrl } = this.state;
+        const {
+            id,
+            name,
+            basicProfileData,
+            birthday,
+            profilePicUrl,
+            errors,
+            hasErrors
+        } = this.state;
 
         return (
             <Container>
                 <TitleWrapper>
-                    <Typography gutterBottom variant='h2' component='h1'>
+                    <Typography
+                        gutterBottom
+                        variant='h2'
+                        component='h1'
+                        ref={this.topOfPageRef}
+                    >
                         Update {name}'s Profile
                     </Typography>
                 </TitleWrapper>
-                {name !== '' ?
+                {name !== '' &&
                     <UpdateNavBar
                         id={id}
                         name={name}
                         history={this.props.history}
-                    /> : null}
-                <Wrapper>
-                    {basicProfileData !== undefined
-                        && Object.keys(basicProfileData).length > 0 ?
+                    />}
+                <WrapperCol>
+                    {hasErrors &&
+                        <DangerAlert>
+                            <IoMdPaw />
+                            &nbsp;&nbsp; Please Fix the Errors: &nbsp;&nbsp;
+                        <IoMdPaw />
+                        </DangerAlert>}
+
+                    {basicProfileData !== undefined &&
+                        Object.keys(basicProfileData).length > 0 &&
                         <BasicProfile
                             basicProfileData={basicProfileData}
+                            errors={errors}
                             handleBasicProfile={this.handleBasicProfile}
-                        /> : null}
+                        />}
 
-                    {birthday !== undefined
-                        && birthday !== '' ?
+                    {birthday !== undefined &&
+                        birthday !== '' &&
                         <BirthdayCalendar
                             birthday={birthday}
                             handleBirthday={this.handleBirthday}
-                        /> : null}
+                        />}
 
                     {profilePicUrl !== undefined
-                        && profilePicUrl !== '' ?
+                        && profilePicUrl !== '' &&
                         <ProfileImage
                             profilePicUrl={profilePicUrl}
                             profilePicture={this.handleProfilePicture}
-                        /> : null}
+                        />}
                     <br />
-                    <Button onClick={this.handleUpdateDoggo}>Save Updated Profile</Button>
+                    <Button onClick={this.handleSubmitDoggo}>Save Updated Profile</Button>
                     <br />
-                </Wrapper>
-                {name !== ''
-                    && id !== undefined ?
+                </WrapperCol>
+                {name !== '' &&
+                    id !== undefined &&
                     <UpdateNavBar
                         id={id}
                         name={name}
                         history={this.props.history}
-                    /> : null}
+                    />}
             </Container>
         );
     };

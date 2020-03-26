@@ -1,27 +1,20 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image'
 import { IoIosClose } from 'react-icons/io';
-import { makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
+import { makeStyles } from '@material-ui/core/styles';
 import Modal from 'react-modal';
+import { 
+    SubText,
+    ImageModalStyle,
+    CloseModalIcon,
+    AlbumImgContainer,
+    HeadingSmall
+ } from '../../style/dog-styles';
 
 Modal.setAppElement('#root');
-
-const imageModalStyle = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-        maxHeight: '100%',
-        maxWidth: '100%'
-    }
-};
 
 const albumStyles = makeStyles(theme => ({
     root: {
@@ -45,29 +38,6 @@ const albumStyles = makeStyles(theme => ({
     },
 }));
 
-const Label = styled.h5`
-    margin: 5px;
-    color: #616b61;
-    text-align: center;
-`;
-
-const Text = styled.div`
-    margin: 5px;    
-    text-align: center;
-`;
-
-const CloseModalIcon = styled.div`
-    margin: 5px;   
-    text-align: right; 
-`;
-
-const AlbumImgContainer = styled.div`    
-    max-width: 800px;
-    max-height: 800px;
-    width: auto;
-    height: auto;
-    text-align: center !important;
-`;
 
 class ProfileAlbum extends Component {
     constructor(props) {
@@ -126,8 +96,8 @@ class ProfileAlbum extends Component {
             <Container>
                 <div>
                     <br />
-                    <Label>{name}'s Album Images</Label>
-                    <Text>Click or Tap to Enlarge</Text>
+                    <HeadingSmall>{name}'s Album Images</HeadingSmall>
+                    <SubText>Click or Tap to Enlarge</SubText>
                     <this.albumContainer />
                     <br />
                 </div>
@@ -136,7 +106,7 @@ class ProfileAlbum extends Component {
                         isOpen={this.state.modalIsOpen}
                         onAfterOpen={this.handleAfterOpenModal}
                         onRequestClose={this.handleCloseModal}
-                        style={imageModalStyle}
+                        style={ImageModalStyle}
                         contentLabel='Album Image Modal'
                     >
                         <h2 ref={subtitle => this.subtitle = subtitle}> </h2>

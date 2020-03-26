@@ -1,22 +1,8 @@
 import React, { Component } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-
-const stepperStyle = makeStyles(theme => ({
-    root: {
-        width: '100%',
-        textAlign: 'center'
-    },
-    backButton: {
-        marginRight: theme.spacing(1),
-    },
-    instructions: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1)
-    },
-}));
+import { StepperStyle } from '../../style/dog-styles';
 
 class TemperamentStepper extends Component {
     constructor(props) {
@@ -76,7 +62,7 @@ class TemperamentStepper extends Component {
     };
 
     Steps = () => {
-        const classes = stepperStyle();
+        const classes = StepperStyle();
         const sections = this.getSteps();
         const { section } = this.state;
 

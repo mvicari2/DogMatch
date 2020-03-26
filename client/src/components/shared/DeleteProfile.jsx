@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
 import api from '../../api';
-import styled from 'styled-components';
-
-const DeleteButton = styled.button.attrs({
-    className: `btn btn-danger`,
-})`
-    margin: 15px 15px 15px 5px;    
-`;
+import { DangerButton } from '../../style/dog-styles';
 
 class DeleteProfile extends Component {
     deleteProfile = e => {
@@ -24,9 +18,9 @@ class DeleteProfile extends Component {
     };
 
     render() {
-        return  <DeleteButton onClick={this.deleteProfile}>
+        return  <DangerButton onClick={this.deleteProfile}>
                     Delete {this.props.name}'s Profile
-                </DeleteButton>
+                </DangerButton>
     };
 };
 

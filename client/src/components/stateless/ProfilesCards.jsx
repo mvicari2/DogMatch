@@ -1,8 +1,6 @@
 import React from 'react';
 import api from '../../api'
-import styled from 'styled-components';
 import 'react-table/react-table.css';
-import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
@@ -13,35 +11,13 @@ import Typography from '@material-ui/core/Typography';
 import config from '../../config/config';
 import Box from '@material-ui/core/Box';
 import 'typeface-roboto';
-
-const cardStyles = makeStyles(theme => ({
-    root: {
-        display: 'inline-flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-        width: 300,
-        backgroundColor: '#f2f4f5',
-        maxHeight: 600,
-        height: 'auto',
-        margin: '10px 0 10px 0'
-    },
-    cardActions: {
-        textAlign: 'center'
-    }
-}));
-
-const Image = styled.img`    
-    position: relative;
-    float: center;
-    width:  auto;
-    height: 300px;
-    background-position: 50% 50%;
-    background-repeat:   no-repeat;
-    background-size:     cover;
-`;
+import {
+    CardStyles,
+    PCardImage
+} from '../../style/dog-styles';
 
 const ProfilesCards = (profiles) => {
-    const classes = cardStyles();
+    const classes = CardStyles();
 
     const handleUpdateClick = async id => {
         profiles.history.push(`/doggos/update/${id}`);
@@ -76,11 +52,9 @@ const ProfilesCards = (profiles) => {
                         <Card className={classes.root} raised={true}>
                             <CardActionArea onClick={() => handleViewProfile(profile._id)}>
                                 <CardMedia>
-                                    <Image
+                                    <PCardImage
                                         src={`${config.profilePicDir}/${profile.fileName}`}
                                         alt='Profile Image'
-                                        thumbnail
-                                        fluid
                                     />
                                 </CardMedia>
 

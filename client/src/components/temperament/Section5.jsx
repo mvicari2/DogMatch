@@ -1,42 +1,25 @@
 import React, { Component } from 'react';
 import api from '../../api';
-import styled from 'styled-components';
-import { withStyles } from '@material-ui/core/styles';
-import Rating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 import { Grid } from '@material-ui/core';
 import { IoMdPaw } from 'react-icons/io';
 import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import { TemperamentStepper } from '../../components';
+import ValidationMsg from '../../resources/Validation';
+import {
+    validateTemperament,
+    determineHasErrors,
+    resetValError
+} from '../../resources/Validation';
 
-const StyledRating = withStyles({
-    iconFilled: {
-        color: '#00468b',
-    },
-    iconHover: {
-        color: '#00468b',
-    },
-})(Rating);
-
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-lg-10',
-})`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const Button = styled.button.attrs({
-    className: `btn btn-primary`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
+import {
+    StyledRating,
+    Wrapper,
+    Label,
+    Button,
+    ErrorBorder
+} from '../../style/dog-styles';
 
 const labels = {
     1: 'Very Little',
@@ -87,43 +70,73 @@ class SectionFive extends Component {
             protectivenessHover: sectionFiveData.protectiveness,
             distinguishThreateningHover: sectionFiveData.distinguishThreatening,
             balanceStabilityHover: sectionFiveData.balanceStability,
-            confidenceHover: sectionFiveData.confidence
+            confidenceHover: sectionFiveData.confidence,
+            errors: {
+                senseOfSmell: false,
+                preyDrive: false,
+                aggressionLevel: false,
+                protectiveness: false,
+                distinguishThreatening: false,
+                balanceStability: false,
+                confidence: false
+            }
         };
     };
 
     handleSenseOfSmellChange = async e => {
         const senseOfSmell = parseInt(e.target.value);
-        this.setState({ senseOfSmell });
+        var errors = this.state.errors;
+
+        errors.senseOfSmell = await resetValError(senseOfSmell);
+        this.setState({ senseOfSmell, errors });
     };
 
     handlePreyDriveChange = async e => {
         const preyDrive = parseInt(e.target.value);
-        this.setState({ preyDrive });
+        var errors = this.state.errors;
+
+        errors.preyDrive = await resetValError(preyDrive);
+        this.setState({ preyDrive, errors });
     };
 
     handleAggressionLevelChange = async e => {
         const aggressionLevel = parseInt(e.target.value);
-        this.setState({ aggressionLevel });
+        var errors = this.state.errors;
+
+        errors.aggressionLevel = await resetValError(aggressionLevel);
+        this.setState({ aggressionLevel, errors });
     };
 
     handleProtectivenessChange = async e => {
         const protectiveness = parseInt(e.target.value);
-        this.setState({ protectiveness });
+        var errors = this.state.errors;
+
+        errors.protectiveness = await resetValError(protectiveness);
+        this.setState({ protectiveness, errors });
     };
 
     handleDistinguishThreateningChange = async e => {
         const distinguishThreatening = parseInt(e.target.value);
-        this.setState({ distinguishThreatening });
+        var errors = this.state.errors;
+
+        errors.distinguishThreatening = await resetValError(distinguishThreatening);
+        this.setState({ distinguishThreatening, errors });
     };
 
     handleBalanceStabilityChange = async e => {
         const balanceStability = parseInt(e.target.value);
-        this.setState({ balanceStability });
+        var errors = this.state.errors;
+
+        errors.balanceStability = await resetValError(balanceStability);
+        this.setState({ balanceStability, errors });
     };
 
     handleConfidenceChange = async e => {
         const confidence = parseInt(e.target.value);
-        this.setState({ confidence });
+        var errors = this.state.errors;
+
+        errors.confidence = await resetValError(confidence);
+        this.setState({ confidence, errors });
     };
 
     // Rating Icon Hover Handlers
@@ -164,6 +177,54 @@ class SectionFive extends Component {
 
     sendSection = async newSection => {
         this.props.sendNewSection(newSection);
+    };
+
+    handleValidation = async direction => {
+        // get array of values from state
+        const values = await this.getValuesArray();
+
+        // validate values in array, returns errors
+        const errors = await validateTemperament(values);
+
+        // determine if there are greater than 0 validation errors
+        const hasErrors = await determineHasErrors(errors);
+
+        if (hasErrors) {
+            const nextErrorState = {
+                senseOfSmell: errors[0],
+                preyDrive: errors[1],
+                aggressionLevel: errors[2],
+                protectiveness: errors[3],
+                distinguishThreatening: errors[4],
+                balanceStability: errors[5],
+                confidence: errors[6]
+            };
+
+            // show alert at top of view (in parent)
+            this.props.showErrorAlert();
+            this.setState({ errors: nextErrorState });
+        } else { // passed validation
+            if (direction === 'back') {
+                this.handleBackSection();
+            } else if (direction === 'next') {
+                this.handleNextSection();
+            };
+        };
+    };
+
+    getValuesArray = async () => {
+        const s = this.state;
+
+        const valuesArray = [
+            s.senseOfSmell,
+            s.preyDrive,
+            s.aggressionLevel,
+            s.protectiveness,
+            s.distinguishThreatening,
+            s.balanceStability,
+            s.confidence
+        ];
+        return valuesArray;
     };
 
     handleBackSection = async () => {
@@ -273,9 +334,9 @@ class SectionFive extends Component {
             protectivenessHover,
             distinguishThreateningHover,
             balanceStabilityHover,
-            confidenceHover
+            confidenceHover,
+            errors
         } = this.state;
-
 
         return (
             <React.Fragment>
@@ -300,23 +361,27 @@ class SectionFive extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='senseOfSmellRating'
-                                    value={senseOfSmell}
-                                    onChange={this.handleSenseOfSmellChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleSenseOfSmellHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.senseOfSmell && '1px solid red'}>
+                                    <StyledRating
+                                        name='senseOfSmellRating'
+                                        value={senseOfSmell}
+                                        onChange={this.handleSenseOfSmellChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleSenseOfSmellHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[senseOfSmellHover !== -1
                                         ? senseOfSmellHover
                                         : senseOfSmell
                                     ]}
                                 </Box>
+                                {errors.senseOfSmell &&
+                                    <ValidationMsg field={'Sense of Smell'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -332,23 +397,27 @@ class SectionFive extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='preyDriveRating'
-                                    value={preyDrive}
-                                    onChange={this.handlePreyDriveChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handlePreyDriveHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.preyDrive && '1px solid red'}>
+                                    <StyledRating
+                                        name='preyDriveRating'
+                                        value={preyDrive}
+                                        onChange={this.handlePreyDriveChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handlePreyDriveHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[preyDriveHover !== -1
                                         ? preyDriveHover
                                         : preyDrive
                                     ]}
                                 </Box>
+                                {errors.preyDrive &&
+                                    <ValidationMsg field={'Prey Drive'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -364,23 +433,27 @@ class SectionFive extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='aggressionLevelRating'
-                                    value={aggressionLevel}
-                                    onChange={this.handleAggressionLevelChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleAggressionLevelHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.aggressionLevel && '1px solid red'}>
+                                    <StyledRating
+                                        name='aggressionLevelRating'
+                                        value={aggressionLevel}
+                                        onChange={this.handleAggressionLevelChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleAggressionLevelHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[aggressionLevelHover !== -1
                                         ? aggressionLevelHover
                                         : aggressionLevel
                                     ]}
                                 </Box>
+                                {errors.aggressionLevel &&
+                                    <ValidationMsg field={'Aggression'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -396,23 +469,27 @@ class SectionFive extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='protectivenessRating'
-                                    value={protectiveness}
-                                    onChange={this.handleProtectivenessChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleProtectivenessHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.protectiveness && '1px solid red'}>
+                                    <StyledRating
+                                        name='protectivenessRating'
+                                        value={protectiveness}
+                                        onChange={this.handleProtectivenessChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleProtectivenessHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[protectivenessHover !== -1
                                         ? protectivenessHover
                                         : protectiveness
                                     ]}
                                 </Box>
+                                {errors.protectiveness &&
+                                    <ValidationMsg field={'Protectiveness'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -428,23 +505,27 @@ class SectionFive extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='stubbornnessRating'
-                                    value={distinguishThreatening}
-                                    onChange={this.handleDistinguishThreateningChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleDistinguishThreateningHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.distinguishThreatening && '1px solid red'}>
+                                    <StyledRating
+                                        name='stubbornnessRating'
+                                        value={distinguishThreatening}
+                                        onChange={this.handleDistinguishThreateningChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleDistinguishThreateningHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[distinguishThreateningHover !== -1
                                         ? distinguishThreateningHover
                                         : distinguishThreatening
                                     ]}
                                 </Box>
+                                {errors.distinguishThreatening &&
+                                    <ValidationMsg field={'Distinguish Threatening'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -460,23 +541,27 @@ class SectionFive extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='balanceStabilityRating'
-                                    value={balanceStability}
-                                    onChange={this.handleBalanceStabilityChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleBalanceStabilityHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.balanceStability && '1px solid red'}>
+                                    <StyledRating
+                                        name='balanceStabilityRating'
+                                        value={balanceStability}
+                                        onChange={this.handleBalanceStabilityChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleBalanceStabilityHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[balanceStabilityHover !== -1
                                         ? balanceStabilityHover
                                         : balanceStability
                                     ]}
                                 </Box>
+                                {errors.balanceStability &&
+                                    <ValidationMsg field={'Balance and Stability'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -492,23 +577,27 @@ class SectionFive extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='confidenceRating'
-                                    value={confidence}
-                                    onChange={this.handleConfidenceChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleConfidenceHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.confidence && '1px solid red'}>
+                                    <StyledRating
+                                        name='confidenceRating'
+                                        value={confidence}
+                                        onChange={this.handleConfidenceChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleConfidenceHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[confidenceHover !== -1
                                         ? confidenceHover
                                         : confidence
                                     ]}
                                 </Box>
+                                {errors.confidence &&
+                                    <ValidationMsg field={'Confidence'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -521,8 +610,8 @@ class SectionFive extends Component {
 
                 <Wrapper>
                     <div>
-                        <Button onClick={this.handleBackSection}>Back</Button>
-                        <Button variant='contained' color='primary' onClick={this.handleNextSection}>
+                        <Button onClick={() => this.handleValidation('back')}>Back</Button>
+                        <Button variant='contained' color='primary' onClick={() => this.handleValidation('next')}>
                             Next Section
                         </Button>
                     </div>

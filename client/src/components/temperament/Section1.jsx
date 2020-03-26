@@ -1,42 +1,25 @@
 import React, { Component } from 'react';
 import api from '../../api';
-import styled from 'styled-components';
-import { withStyles } from '@material-ui/core/styles';
-import Rating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 import { Grid } from '@material-ui/core';
 import { IoMdPaw } from 'react-icons/io';
 import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import { TemperamentStepper } from '../../components';
+import ValidationMsg from '../../resources/Validation';
+import {
+    validateTemperament,
+    determineHasErrors,
+    resetValError
+} from '../../resources/Validation';
 
-const StyledRating = withStyles({
-    iconFilled: {
-        color: '#00468b',
-    },
-    iconHover: {
-        color: '#00468b',
-    },
-})(Rating);
-
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-lg-10',
-})`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const Button = styled.button.attrs({
-    className: `btn btn-primary`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
+import {
+    StyledRating,
+    Wrapper,
+    Label,
+    Button,
+    ErrorBorder
+} from '../../style/dog-styles';
 
 const labels = {
     1: 'Very Little',
@@ -81,28 +64,48 @@ class SectionOne extends Component {
             empatheticHover: sectionOneData.empathetic,
             anxietyHover: sectionOneData.anxiety,
             fearfulHover: sectionOneData.anxiety,
-            fireworksHover: sectionOneData.isAfraidFireworks
+            fireworksHover: sectionOneData.isAfraidFireworks,
+            // validation error bools
+            errors: {
+                empathetic: false,
+                anxiety: false,
+                fearful: false,
+                isAfraidFireworks: false
+            }
         };
     };
 
     handleEmpatheticChange = async e => {
         const empathetic = parseInt(e.target.value);
-        this.setState({ empathetic });
+        var errors = this.state.errors;
+
+        // reset validation error if field now passes validation
+        errors.empathetic = await resetValError(empathetic);
+        this.setState({ empathetic, errors });
     };
 
     handleAnxietyChange = async e => {
         const anxiety = parseInt(e.target.value);
-        this.setState({ anxiety });
+        var errors = this.state.errors;
+
+        errors.anxiety = await resetValError(anxiety);
+        this.setState({ anxiety, errors });
     };
 
     handleFearfulChange = async e => {
         const fearful = parseInt(e.target.value);
-        this.setState({ fearful });
+        var errors = this.state.errors;
+
+        errors.fearful = await resetValError(fearful);
+        this.setState({ fearful, errors });
     };
 
     handleFireworksChange = async e => {
         const isAfraidFireworks = parseInt(e.target.value);
-        this.setState({ isAfraidFireworks });
+        var errors = this.state.errors;
+
+        errors.isAfraidFireworks = await resetValError(isAfraidFireworks);
+        this.setState({ isAfraidFireworks, errors });
     };
 
     // Rating Icon Hover Handlers
@@ -128,6 +131,44 @@ class SectionOne extends Component {
 
     sendSection = async newSection => {
         this.props.sendNewSection(newSection);
+    };
+
+    handleValidation = async direction => {
+        // get array of values from state
+        const values = await this.getValuesArray();
+
+        // validate values in array, returns errors
+        const errors = await validateTemperament(values);
+
+        // determine if there are greater than 0 validation errors
+        const hasErrors = await determineHasErrors(errors);
+
+        if (hasErrors) {
+            const nextErrorState = {
+                empathetic: errors[0],
+                anxiety: errors[1],
+                fearful: errors[2],
+                isAfraidFireworks: errors[3]
+            };
+
+            // show alert at top of view (in parent)
+            this.props.showErrorAlert();
+            this.setState({ errors: nextErrorState });
+        } else {
+            this.handleNextSection();
+        };
+    };
+
+    getValuesArray = async () => {
+        const s = this.state;
+
+        const valuesArray = [
+            s.empathetic,
+            s.anxiety,
+            s.fearful,
+            s.isAfraidFireworks
+        ];
+        return valuesArray;
     };
 
     handleBackToProfile = async () => {
@@ -201,7 +242,8 @@ class SectionOne extends Component {
             empatheticHover,
             anxietyHover,
             fearfulHover,
-            fireworksHover
+            fireworksHover,
+            errors
         } = this.state;
 
         return (
@@ -230,23 +272,26 @@ class SectionOne extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='empatheticRating'
-                                    value={empathetic}
-                                    onChange={this.handleEmpatheticChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleEmpatheticHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.empathetic && '1px solid red'}>
+                                    <StyledRating
+                                        name='empatheticRating'
+                                        value={empathetic}
+                                        onChange={this.handleEmpatheticChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleEmpatheticHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[empatheticHover !== -1
                                         ? empatheticHover
                                         : empathetic
                                     ]}
                                 </Box>
+                                {errors.empathetic && <ValidationMsg field={'Empathetic Rating'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -262,23 +307,26 @@ class SectionOne extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='anxietyRating'
-                                    value={anxiety}
-                                    onChange={this.handleAnxietyChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleAxietyHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.anxiety && '1px solid red'}>
+                                    <StyledRating
+                                        name='anxietyRating'
+                                        value={anxiety}
+                                        onChange={this.handleAnxietyChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleAxietyHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[anxietyHover !== -1
                                         ? anxietyHover
                                         : anxiety
                                     ]}
                                 </Box>
+                                {errors.anxiety && <ValidationMsg field={'Anxiety Rating'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -294,23 +342,26 @@ class SectionOne extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='fearfulRating'
-                                    value={fearful}
-                                    onChange={this.handleFearfulChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleFearfulHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.fearful && '1px solid red'}>
+                                    <StyledRating
+                                        name='fearfulRating'
+                                        value={fearful}
+                                        onChange={this.handleFearfulChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleFearfulHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[fearfulHover !== -1
                                         ? fearfulHover
                                         : fearful
                                     ]}
                                 </Box>
+                                {errors.fearful && <ValidationMsg field={'Fearful Rating'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -326,23 +377,26 @@ class SectionOne extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='fireworksRating'
-                                    value={isAfraidFireworks}
-                                    onChange={this.handleFireworksChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleFireworksHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.isAfraidFireworks && '1px solid red'}>
+                                    <StyledRating
+                                        name='fireworksRating'
+                                        value={isAfraidFireworks}
+                                        onChange={this.handleFireworksChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleFireworksHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[fireworksHover !== -1
                                         ? fireworksHover
                                         : isAfraidFireworks
                                     ]}
                                 </Box>
+                                {errors.isAfraidFireworks && <ValidationMsg field={'Fear of Fireworks Rating'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -358,7 +412,7 @@ class SectionOne extends Component {
                         <Button onClick={this.handleBackToProfile}>
                             Back to Basic Profile
                         </Button>
-                        <Button variant='contained' color='primary' onClick={this.handleNextSection}>
+                        <Button variant='contained' color='primary' onClick={this.handleValidation}>
                             Next Section
                         </Button>
                     </div>

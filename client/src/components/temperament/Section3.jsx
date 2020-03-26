@@ -1,42 +1,25 @@
 import React, { Component } from 'react';
 import api from '../../api';
-import styled from 'styled-components';
-import { withStyles } from '@material-ui/core/styles';
-import Rating from '@material-ui/lab/Rating';
 import Box from '@material-ui/core/Box';
 import { Grid } from '@material-ui/core';
 import { IoMdPaw } from 'react-icons/io';
 import PropTypes from 'prop-types';
 import Tooltip from '@material-ui/core/Tooltip';
 import { TemperamentStepper } from '../../components';
+import ValidationMsg from '../../resources/Validation';
+import {
+    validateTemperament,
+    determineHasErrors,
+    resetValError
+} from '../../resources/Validation';
 
-const StyledRating = withStyles({
-    iconFilled: {
-        color: '#00468b',
-    },
-    iconHover: {
-        color: '#00468b',
-    },
-})(Rating);
-
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-lg-10',
-})`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const Button = styled.button.attrs({
-    className: `btn btn-primary`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
+import {
+    StyledRating,
+    Wrapper,
+    Label,
+    Button,
+    ErrorBorder
+} from '../../style/dog-styles';
 
 const labels = {
     1: 'Very Little',
@@ -85,38 +68,64 @@ class SectionThree extends Component {
             likesPlayingDogsHover: sectionThreeData.likesPlayingDogs,
             playsFetchHover: sectionThreeData.playsFetch,
             likesToysHover: sectionThreeData.likesToys,
-            likesTreatsHover: sectionThreeData.likesTreats
+            likesTreatsHover: sectionThreeData.likesTreats,
+            errors: {
+                playfulness: false,
+                likesPlayingHumans: false,
+                likesPlayingDogs: false,
+                playsFetch: false,
+                likesToys: false,
+                likesTreats: false
+            }
         };
     };
 
     handlePlayfulnessChange = async e => {
         const playfulness = parseInt(e.target.value);
-        this.setState({ playfulness });
+        var errors = this.state.errors;
+
+        errors.playfulness = await resetValError(playfulness);
+        this.setState({ playfulness, errors });
     };
 
     handleLikesPlayingHumansChange = async e => {
         const likesPlayingHumans = parseInt(e.target.value);
-        this.setState({ likesPlayingHumans });
+        var errors = this.state.errors;
+
+        errors.likesPlayingHumans = await resetValError(likesPlayingHumans);
+        this.setState({ likesPlayingHumans, errors });
     };
 
     handleLikesPlayingDogsChange = async e => {
         const likesPlayingDogs = parseInt(e.target.value);
-        this.setState({ likesPlayingDogs });
+        var errors = this.state.errors;
+
+        errors.likesPlayingDogs = await resetValError(likesPlayingDogs);
+        this.setState({ likesPlayingDogs, errors });
     };
 
     handlePlaysFetchChange = async e => {
         const playsFetch = parseInt(e.target.value);
-        this.setState({ playsFetch });
+        var errors = this.state.errors;
+
+        errors.playsFetch = await resetValError(playsFetch);
+        this.setState({ playsFetch, errors });
     };
 
     handleLikesToysChange = async e => {
         const likesToys = parseInt(e.target.value);
-        this.setState({ likesToys });
+        var errors = this.state.errors;
+
+        errors.likesToys = await resetValError(likesToys);
+        this.setState({ likesToys, errors });
     };
 
     handleLikesTreatsChange = async e => {
         const likesTreats = parseInt(e.target.value);
-        this.setState({ likesTreats });
+        var errors = this.state.errors;
+
+        errors.likesTreats = await resetValError(likesTreats);
+        this.setState({ likesTreats, errors });
     };
 
     // Rating Icon Hover Handlers
@@ -153,6 +162,52 @@ class SectionThree extends Component {
     sendSection = async newSection => {
         this.props.sendNewSection(newSection);
     };
+
+    handleValidation = async direction => {
+        // get array of values from state
+        const values = await this.getValuesArray();
+
+        // validate values in array, returns errors
+        const errors = await validateTemperament(values);
+
+        // determine if there are greater than 0 validation errors
+        const hasErrors = await determineHasErrors(errors);
+
+        if (hasErrors) {
+            const nextErrorState = {
+                playfulness: errors[0],
+                likesPlayingHumans: errors[1],
+                likesPlayingDogs: errors[2],
+                playsFetch: errors[3],
+                likesToys: errors[4],
+                likesTreats: errors[5]
+            };
+
+            this.props.showErrorAlert();
+            this.setState({ errors: nextErrorState });
+        } else {
+            if (direction === 'back') {
+                this.handleBackSection();
+            } else if (direction === 'next') {
+                this.handleNextSection();
+            };
+        };
+    };
+
+    getValuesArray = async () => {
+        const s = this.state;
+
+        const values = [
+            s.playfulness,
+            s.likesPlayingHumans,
+            s.likesPlayingDogs,
+            s.playsFetch,
+            s.likesToys,
+            s.likesTreats
+        ];
+
+        return values;
+    }
 
     handleBackSection = async () => {
         const {
@@ -253,7 +308,8 @@ class SectionThree extends Component {
             likesPlayingDogsHover,
             playsFetchHover,
             likesToysHover,
-            likesTreatsHover
+            likesTreatsHover,
+            errors
         } = this.state;
 
 
@@ -280,23 +336,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='playfulnessRating'
-                                    value={playfulness}
-                                    onChange={this.handlePlayfulnessChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handlePlayfulnessHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.playfulness && '1px solid red'}>
+                                    <StyledRating
+                                        name='playfulnessRating'
+                                        value={playfulness}
+                                        onChange={this.handlePlayfulnessChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handlePlayfulnessHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[playfulnessHover !== -1
                                         ? playfulnessHover
                                         : playfulness
                                     ]}
                                 </Box>
+                                {errors.playfulness &&
+                                    <ValidationMsg field={'Playfulness'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -312,23 +372,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='likesPlayingHumansRating'
-                                    value={likesPlayingHumans}
-                                    onChange={this.handleLikesPlayingHumansChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleLikesPlayingHumansHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.likesPlayingHumans && '1px solid red'}>
+                                    <StyledRating
+                                        name='likesPlayingHumansRating'
+                                        value={likesPlayingHumans}
+                                        onChange={this.handleLikesPlayingHumansChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleLikesPlayingHumansHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[likesPlayingHumansHover !== -1
                                         ? likesPlayingHumansHover
                                         : likesPlayingHumans
                                     ]}
                                 </Box>
+                                {errors.likesPlayingHumans &&
+                                    <ValidationMsg field={'Enjoys Humans'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -344,23 +408,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='likesPlayingDogsRating'
-                                    value={likesPlayingDogs}
-                                    onChange={this.handleLikesPlayingDogsChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleLikesPlayingDogsHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.likesPlayingDogs && '1px solid red'}>
+                                    <StyledRating
+                                        name='likesPlayingDogsRating'
+                                        value={likesPlayingDogs}
+                                        onChange={this.handleLikesPlayingDogsChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleLikesPlayingDogsHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[likesPlayingDogsHover !== -1
                                         ? likesPlayingDogsHover
                                         : likesPlayingDogs
                                     ]}
                                 </Box>
+                                {errors.likesPlayingDogs &&
+                                    <ValidationMsg field={'Enjoys Other Dogs'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -376,23 +444,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='playsFetchRating'
-                                    value={playsFetch}
-                                    onChange={this.handlePlaysFetchChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handlePlaysFetchHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.playsFetch && '1px solid red'}>
+                                    <StyledRating
+                                        name='playsFetchRating'
+                                        value={playsFetch}
+                                        onChange={this.handlePlaysFetchChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handlePlaysFetchHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[playsFetchHover !== -1
                                         ? playsFetchHover
                                         : playsFetch
                                     ]}
                                 </Box>
+                                {errors.playsFetch &&
+                                    <ValidationMsg field={'Enjoys Fetch'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -408,23 +480,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='likesToysRating'
-                                    value={likesToys}
-                                    onChange={this.handleLikesToysChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleLikesToysHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.likesToys && '1px solid red'}>
+                                    <StyledRating
+                                        name='likesToysRating'
+                                        value={likesToys}
+                                        onChange={this.handleLikesToysChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleLikesToysHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[likesToysHover !== -1
                                         ? likesToysHover
                                         : likesToys
                                     ]}
                                 </Box>
+                                {errors.likesToys &&
+                                    <ValidationMsg field={'Likes Toys'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -440,23 +516,27 @@ class SectionThree extends Component {
                     >
                         <Grid item xs={12}>
                             <Box component='fieldset' mb={3} borderColor='transparent'>
-                                <StyledRating
-                                    name='likesTreatsRating'
-                                    value={likesTreats}
-                                    onChange={this.handleLikesTreatsChange}
-                                    precision={1}
-                                    icon={<IoMdPaw fontSize='60' />}
-                                    IconContainerComponent={IconContainer}
-                                    onChangeActive={(event, hover) => {
-                                        this.handleLikesTreatsHover(hover);
-                                    }}
-                                />
+                                <ErrorBorder border={errors.likesTreats && '1px solid red'}>
+                                    <StyledRating
+                                        name='likesTreatsRating'
+                                        value={likesTreats}
+                                        onChange={this.handleLikesTreatsChange}
+                                        precision={1}
+                                        icon={<IoMdPaw fontSize='60' />}
+                                        IconContainerComponent={IconContainer}
+                                        onChangeActive={(event, hover) => {
+                                            this.handleLikesTreatsHover(hover);
+                                        }}
+                                    />
+                                </ErrorBorder>
                                 <Box ml={2}>
                                     {labels[likesTreatsHover !== -1
                                         ? likesTreatsHover
                                         : likesTreats
                                     ]}
                                 </Box>
+                                {errors.likesTreats &&
+                                    <ValidationMsg field={'Enjoys Treats'} />}
                             </Box>
                         </Grid>
                     </Grid>
@@ -469,8 +549,8 @@ class SectionThree extends Component {
 
                 <Wrapper>
                     <div>
-                        <Button onClick={this.handleBackSection}>Back</Button>
-                        <Button variant='contained' color='primary' onClick={this.handleNextSection}>
+                        <Button onClick={() => this.handleValidation('back')}>Back</Button>
+                        <Button variant='contained' color='primary' onClick={() => this.handleValidation('next')}>
                             Next Section
                         </Button>
                     </div>

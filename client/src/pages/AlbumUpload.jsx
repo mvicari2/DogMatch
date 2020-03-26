@@ -1,45 +1,18 @@
 import React, { Component } from 'react';
 import api from '../api';
-import styled from 'styled-components';
 import Container from 'react-bootstrap/Container';
 import axios from 'axios';
 import config from '../config/config';
 import Typography from '@material-ui/core/Typography';
 import 'typeface-roboto';
 import { AlbumDropContainer } from '../components';
-
-const Wrapper = styled.div.attrs({
-    className: 'form-group col-lg-10',
-})`
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-`;
-
-const Label = styled.label`
-    margin: 5px;
-`;
-
-const Button = styled.button.attrs({
-    className: `btn btn-primary`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
-
-const RemoveImgButton = styled.a.attrs({
-    className: `btn btn-outline-warning btn-sm`,
-})`
-    margin: 15px 15px 15px 5px;
-`;
-
-const Image = styled.img`    
-    max-width: 350px;
-    max-height: 350px;
-    width: auto;
-    height: auto;
-    text-align: center !important;
-`;
+import {
+    Wrapper,
+    Label,
+    Button,
+    SmallWarningButton,
+    Image
+} from '../style/dog-styles';
 
 class AlbumUpload extends Component {
     constructor(props) {
@@ -195,7 +168,7 @@ class AlbumUpload extends Component {
             <Container>
                 <Wrapper>
                     <Typography gutterBottom variant='h3' component='h3'>
-                        Upload a Photo Album of 
+                        Upload a Photo Album of
                         <br />
                         {name}
                     </Typography>
@@ -204,29 +177,28 @@ class AlbumUpload extends Component {
                         handleAlbumDrop={this.handleAlbumFiles}
                     />
 
-                    {this.state.albumUrls.length > 0 ?
+                    {this.state.albumUrls.length > 0 &&
                         <div>
                             <div>
                                 <Label>Album Pictures Preview: </Label><br />
-                                <RemoveImgButton onClick={this.handleRemoveAll}>
+                                <SmallWarningButton onClick={this.handleRemoveAll}>
                                     Remove All Images
-                                </RemoveImgButton>
+                                </SmallWarningButton>
 
                                 {albumUrls.map((url, index) =>
                                     <div key={index}>
                                         <p>
                                             <Image src={url} alt='Album Image' />
-                                            <RemoveImgButton
+                                            <SmallWarningButton
                                                 onClick={() => this.handleRemoveImage(index)}
                                             >
                                                 Remove Image
-                                            </RemoveImgButton>
+                                            </SmallWarningButton>
                                         </p>
                                     </div>
                                 )}
                             </div>
-                        </div>
-                        : null}
+                        </div>}
                     <br />
                     <Button onClick={this.handleBackToBiography}>Back to Biography</Button>
                     <Button onClick={this.handlePostAlbum}>Save Album & Submit Profile</Button>
