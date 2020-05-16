@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import 'react-infinite-calendar/styles.css';
-import Container from 'react-bootstrap/Container';
 import { FiUpload } from 'react-icons/fi';
 import Dropzone from 'react-dropzone';
 import {
     Label,
     SmallWarningButton,
-    Image,
-    DropZoneContainer
+    ImageMedium,
+    DropZoneContainer,
+    BootstrapContainer
 } from '../../style/dog-styles';
 
 class ProfileImage extends Component {
@@ -46,13 +46,13 @@ class ProfileImage extends Component {
         const maxSize = 5242880; //5mb max image size for profile picture
         
         return (
-            <Container>
+            <BootstrapContainer>
                 {profilePicUrl != null
                     && profilePicUrl.length > 0
                     ? <div>
                         <div>
                             <Label>Profile Picture Preview: </Label><br />
-                            <Image src={profilePicUrl} alt='profile' />
+                            <ImageMedium src={profilePicUrl} alt='profile' />
                         </div>
                         <SmallWarningButton onClick={this.handleRemoveImage}>
                             Remove Image
@@ -94,7 +94,7 @@ class ProfileImage extends Component {
                             }}
                         </Dropzone>
                     </div>}
-            </Container>
+            </BootstrapContainer>
         );
     };
 };

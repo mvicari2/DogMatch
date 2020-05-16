@@ -1,43 +1,20 @@
 import React, { Component } from 'react';
-import Container from 'react-bootstrap/Container';
-import Image from 'react-bootstrap/Image'
 import { IoIosClose } from 'react-icons/io';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
-import { makeStyles } from '@material-ui/core/styles';
 import Modal from 'react-modal';
 import { 
     SubText,
     ImageModalStyle,
     CloseModalIcon,
     AlbumImgContainer,
-    HeadingSmall
+    HeadingSmall,
+    AlbumStyles,
+    StyledContainer,
+    BootstrapImage
  } from '../../style/dog-styles';
 
 Modal.setAppElement('#root');
-
-const albumStyles = makeStyles(theme => ({
-    root: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-        overflow: 'hidden',
-        backgroundColor: theme.palette.background.paper,
-    },
-    gridList: {
-        flexWrap: 'nowrap',
-        // Promote the list into it's own layer on Chrome. This cost memory but helps keeping high FPS.
-        transform: 'translateZ(0)',
-    },
-    title: {
-        color: theme.palette.primary.light,
-    },
-    titleBar: {
-        background:
-            'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
-    },
-}));
-
 
 class ProfileAlbum extends Component {
     constructor(props) {
@@ -50,7 +27,7 @@ class ProfileAlbum extends Component {
     };
 
     albumContainer = () => {
-        const albumClass = albumStyles();
+        const albumClass = AlbumStyles();
         const albumUrls = this.state.albumUrls;
 
         return (
@@ -93,7 +70,7 @@ class ProfileAlbum extends Component {
         } = this.state;
 
         return (
-            <Container>
+            <StyledContainer>
                 <div>
                     <br />
                     <HeadingSmall>{name}'s Album Images</HeadingSmall>
@@ -117,7 +94,7 @@ class ProfileAlbum extends Component {
                             />
                         </CloseModalIcon>
                         <AlbumImgContainer>
-                            <Image
+                            <BootstrapImage
                                 src={albumImage}
                                 alt='Album Pic'
                                 thumbnail
@@ -126,7 +103,7 @@ class ProfileAlbum extends Component {
                         </AlbumImgContainer>
                     </Modal>
                 </div>
-            </Container>
+            </StyledContainer>
         );
     };
 };

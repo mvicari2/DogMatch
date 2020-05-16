@@ -1,7 +1,6 @@
 {    
     "version": "0.2.0",
     "configurations": [
-        // Server Launch via npm w/debug
         {
             "type": "node",
             "request": "launch",
@@ -20,7 +19,6 @@
             ]
         },  
 
-        // Client debugging in Chrome  
         {
             "type": "chrome",
             "request": "launch",

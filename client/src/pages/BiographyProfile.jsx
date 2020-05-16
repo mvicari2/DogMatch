@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import api from '../api';
-import Container from 'react-bootstrap/Container';
 import Typography from '@material-ui/core/Typography';
 import 'typeface-roboto';
 import {
     Wrapper,
     InputTextLarge,
     Label,
-    Button 
+    Button,
+    BootstrapContainer 
 } from '../style/dog-styles';
 
 
@@ -125,7 +125,7 @@ class BiographyProfile extends Component {
             } = this.state;
 
             return (
-                <Container>
+                <BootstrapContainer>
                     <Wrapper>
                         <Typography gutterBottom variant='h2'>
                             {name}'s Biography Profile
@@ -176,7 +176,7 @@ class BiographyProfile extends Component {
                         <Button onClick={this.handleBackToTemperament}>Back to Temperament</Button>
                         <Button onClick={this.handlePostBiography}>Save Biography</Button>
                     </Wrapper>
-                </Container>
+                </BootstrapContainer>
             );
         };
     };

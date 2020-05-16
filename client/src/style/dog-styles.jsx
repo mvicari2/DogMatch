@@ -1,9 +1,27 @@
 // Master style sheet for Styled components and other css classes/components
 
 import styled, { css, keyframes } from 'styled-components';
-import { makeStyles } from '@material-ui/core/styles';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Rating from '@material-ui/lab/Rating';
+
+// Import react-bootstrap components to wrap in Styled Components
+import Image from 'react-bootstrap/Image';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import Table from 'react-bootstrap/Table';
+
+
+// React-Bootstrap
+export const BootstrapImage = styled(Image)``;
+export const BootstrapContainer = styled(Container)``;
+export const BootstrapRow = styled(Row)``;
+export const BootstrapCol = styled(Col)``;
+export const BootstrapForm = styled(Form)``;
+export const BootstrapTable = styled(Table)``;
+
+
 
 // Wrappers, divs, cols, rows, and containers 
 export const Wrapper = styled.div.attrs({
@@ -25,7 +43,7 @@ export const ImageWrapper = styled.div`
 
 export const CloseModalWrapper = styled.div`    
     margin: 5px;   
-    text-align: right; 
+    text-align: right !important; 
 `;
 
 export const MatchesWrapper = styled.div`   
@@ -120,7 +138,7 @@ export const InputWrapper = styled.span`
     margin-top: 15px;    
 `;
 
-export const Container = styled.div.attrs({
+export const StyledContainer = styled.div.attrs({
     className: 'container',    
 })`
     min-height: 100%;
@@ -209,7 +227,7 @@ export const CloseModalIcon = styled.button`
     border: 0;
     background-color: white;
     margin: 5px;   
-    text-align: right; 
+    text-align: right !important; 
 `;
 
 export const SmallWarningButton = styled.a.attrs({
@@ -246,7 +264,7 @@ export const DangerAlert = styled.div.attrs({
 
 
 // Images
-export const Image = styled.img`    
+export const ImageMedium = styled.img`    
     max-width: 350px;
     max-height: 350px;
     width: auto;
@@ -453,10 +471,10 @@ export const FooterStyle = {
 };
 
 export const Block = {
-  display: 'block',
-  padding: '0px',
-  height: '20px',
-  width: '100%',
+    display: 'block',
+    padding: '0px',
+    height: '20px',
+    width: '100%',
 };
 
 export const FilterStyle = {
@@ -477,6 +495,21 @@ export const FilterStyle = {
 
 
 // Material-UI component styles (makeStyles/useStyles)
+export const AlbumStyles = makeStyles(theme => ({
+    root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        overflow: 'hidden',
+        backgroundColor: theme.palette.background.paper
+    },
+    gridList: {
+        flexWrap: 'nowrap !important',
+        // Promote the list into it's own layer on Chrome. This cost memory but helps keeping high FPS.
+        transform: 'translateZ(0)'
+    }
+}));
+
 export const CardStyles = makeStyles(theme => ({
     root: {
         display: 'inline-flex',

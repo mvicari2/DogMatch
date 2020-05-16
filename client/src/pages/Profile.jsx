@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
 import api from '../api';
 import Moment from 'react-moment';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Image from 'react-bootstrap/Image'
-import Table from 'react-bootstrap/Table'
 import { FaBirthdayCake } from 'react-icons/fa';
 import config from '../config/config';
 import Modal from 'react-modal';
@@ -15,7 +10,12 @@ import 'typeface-roboto';
 import {
     WrapperCol,
     ImageContainer,
-    ColContainer
+    ColContainer,
+    BootstrapImage,
+    BootstrapContainer,
+    BootstrapRow,
+    BootstrapCol,
+    BootstrapTable
 } from '../style/dog-styles';
 
 import {
@@ -153,16 +153,16 @@ class Profile extends Component {
             : <Moment format='MM/DD/YYYY'>{birthday}</Moment>;
 
         return (
-            <Container>
-                <Row>
-                    <Col sm={true}>
+            <BootstrapContainer>
+                <BootstrapRow>
+                    <BootstrapCol sm={true}>
                         {profilePicUrl != null
                             && profilePicUrl.length > 0
                             ? <ColContainer>
                                 <div>
                                     <br />
                                     <ImageContainer>
-                                        <Image
+                                        <BootstrapImage
                                             src={profilePicUrl}
                                             alt='Profile Pic'
                                             thumbnail
@@ -172,22 +172,22 @@ class Profile extends Component {
                                 </div>
                             </ColContainer>
                             : <ImageContainer>
-                                <Image
+                                <BootstrapImage
                                     src={require(`../../src/resources/default.jpg`)}
                                     alt='default Profile Pic'
                                     thumbnail
                                     fluid
                                 />
                             </ImageContainer>}
-                    </Col>
-                    <Col sm={true} lg={true} md={true}>
+                    </BootstrapCol>
+                    <BootstrapCol sm={true} lg={true} md={true}>
                         <ColContainer>
                             <Typography gutterBottom variant='h4'>
                                 {name}
                             </Typography>
                             <br />
 
-                            <Table striped bordered hover size='sm'>
+                            <BootstrapTable striped bordered hover size='sm'>
                                 <tbody>
                                     <tr>
                                         <td>Breed: </td>
@@ -215,7 +215,7 @@ class Profile extends Component {
                                         <td>{bday}</td>
                                     </tr>
                                 </tbody>
-                            </Table>
+                            </BootstrapTable>
                             {name !== null && name !== undefined && name !== '' &&
                                 <Matches
                                     id={id}
@@ -223,8 +223,8 @@ class Profile extends Component {
                                     history={this.props.history}
                                 />}
                         </ColContainer>
-                    </Col>
-                </Row>
+                    </BootstrapCol>
+                </BootstrapRow>
                 <br />
 
                 {displayTemperament &&
@@ -258,7 +258,7 @@ class Profile extends Component {
                         history={this.props.history}
                     />
                 </WrapperCol>
-            </Container>
+            </BootstrapContainer>
         );
     };
 };

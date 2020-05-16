@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import resources from '../../resources/resources';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -12,7 +10,9 @@ import {
     Label,
     InputText,
     Radios,
-    ErrorBorder
+    ErrorBorder,
+    BootstrapRow,
+    BootstrapCol
 } from '../../style/dog-styles';
 
 const animatedComponents = makeAnimated();
@@ -89,8 +89,8 @@ class BasicProfile extends Component {
 
         return (
             <React.Fragment>
-                <Row>
-                    <Col sm={true}>
+                <BootstrapRow>
+                    <BootstrapCol sm={true}>
                         <Label>Name: </Label>
                         <InputText
                             type='text'
@@ -99,8 +99,8 @@ class BasicProfile extends Component {
                             border={errors.name && '1px solid red'}
                         />
                         {errors.name && <ValidationMsg field={'Name'} />}
-                    </Col>
-                    <Col sm={true}>
+                    </BootstrapCol>
+                    <BootstrapCol sm={true}>
                         <Label>Breed: </Label>
                         <InputText
                             type='text'
@@ -109,10 +109,10 @@ class BasicProfile extends Component {
                             border={errors.breed && '1px solid red'}
                         />
                         {errors.breed && <ValidationMsg field={'Breed'} />}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col sm={true}>
+                    </BootstrapCol>
+                </BootstrapRow>
+                <BootstrapRow>
+                    <BootstrapCol sm={true}>
                         <Label>Color: </Label>
                         <Select
                             isMulti
@@ -127,8 +127,8 @@ class BasicProfile extends Component {
                             }}
                         />
                         {errors.color && <ValidationMsg field={'Color'} />}
-                    </Col>
-                    <Col sm={true}>
+                    </BootstrapCol>
+                    <BootstrapCol sm={true}>
                         <Label>Age: </Label>
                         <InputText
                             type='number'
@@ -142,10 +142,10 @@ class BasicProfile extends Component {
                             border={errors.age && '1px solid red'}
                         />
                         {errors.age && <ValidationMsg field={'Age'} />}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col sm={true}>
+                    </BootstrapCol>
+                </BootstrapRow>
+                <BootstrapRow>
+                    <BootstrapCol sm={true}>
                         <Label>Weight: </Label>
                         <InputText
                             type='number'
@@ -159,8 +159,8 @@ class BasicProfile extends Component {
                             border={errors.weight && '1px solid red'}
                         />
                         {errors.weight && <ValidationMsg field={'Weight'} />}
-                    </Col>
-                    <Col sm={true}>
+                    </BootstrapCol>
+                    <BootstrapCol sm={true}>
                         <Label>Gender: </Label>
                         <ErrorBorder border={errors.gender && '1px solid red'}>
                             <RadioGroup
@@ -186,8 +186,8 @@ class BasicProfile extends Component {
                             </RadioGroup>
                         </ErrorBorder>
                         {errors.gender && <ValidationMsg field={'Gender'} />}
-                    </Col>
-                </Row>
+                    </BootstrapCol>
+                </BootstrapRow>
             </React.Fragment>
         );
     };

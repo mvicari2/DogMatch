@@ -3,13 +3,13 @@ import InfiniteCalendar from 'react-infinite-calendar';
 import 'react-infinite-calendar/styles.css';
 import Modal from 'react-modal';
 import Moment from 'react-moment';
-import Container from 'react-bootstrap/Container';
 import { FaBirthdayCake } from 'react-icons/fa';
 import { 
     WrapperCol,
     Label,
     BirthdayStyle,
-    BirthdayButton
+    BirthdayButton,
+    StyledContainer
  } from '../../style/dog-styles';
 
 Modal.setAppElement('#root');
@@ -48,7 +48,7 @@ class BirthdayCalendar extends Component {
             : <Moment format='MM/DD/YYYY'>{birthday}</Moment>;
 
         return (
-            <Container>
+            <StyledContainer>
                 <WrapperCol>
                     
                     <Label>Birthday: {bday}</Label>
@@ -77,7 +77,7 @@ class BirthdayCalendar extends Component {
                                 } />
                         </Modal>                    
                 </WrapperCol>
-            </Container>
+            </StyledContainer>
         );
     };
 };

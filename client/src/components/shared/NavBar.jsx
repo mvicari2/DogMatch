@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import Logo from './Logo';
 import Links from './Links';
-import { Container, Navigation } from '../../style/dog-styles';
+import { StyledContainer, Navigation } from '../../style/dog-styles';
 
 class NavBar extends Component {
     render() {
         return (
-            <Container>
+            <StyledContainer>
                 <Navigation>
                     <Logo />
                     <Links />
                 </Navigation>
-            </Container>
+            </StyledContainer>
         );
     };
 };

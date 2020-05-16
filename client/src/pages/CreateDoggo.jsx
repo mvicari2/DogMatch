@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import api from '../api';
-import Container from 'react-bootstrap/Container';
 import axios from 'axios';
 import config from '../config/config';
 import Typography from '@material-ui/core/Typography';
@@ -12,7 +11,8 @@ import {
     WrapperCol,
     Button,
     DangerButton,
-    DangerAlert,    
+    DangerAlert,  
+    BootstrapContainer  
 } from '../style/dog-styles';
 
 import {
@@ -147,7 +147,7 @@ class CreateDoggo extends Component {
         } = this.state;
 
         return (
-            <Container>
+            <BootstrapContainer>
                 <WrapperCol>
                     <Typography
                         gutterBottom
@@ -178,10 +178,10 @@ class CreateDoggo extends Component {
                         profilePicture={this.handleProfilePicture}
                     />
 
-                    <DangerButton href={'/'}>Cancel</DangerButton>                   
+                    <DangerButton href={'/'}>Cancel</DangerButton>                    
                     <Button onClick={this.handleSubmitDoggo}>Save and Next</Button>
                 </WrapperCol>
-            </Container>
+            </BootstrapContainer>
         );
     };
 };

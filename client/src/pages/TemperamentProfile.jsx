@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import api from '../api';
-import Container from 'react-bootstrap/Container';
 import Typography from '@material-ui/core/Typography';
 import { IoMdPaw } from 'react-icons/io';
 import 'typeface-roboto';
@@ -8,7 +7,8 @@ import 'typeface-roboto';
 import {
     Wrapper,
     Button,
-    DangerAlert
+    DangerAlert,
+    BootstrapContainer
 } from '../style/dog-styles';
 
 import {
@@ -400,7 +400,7 @@ class TemperamentProfile extends Component {
         switch (section) {
             case 1:
                 return (
-                    <Container ref={this.topOfPageRef}>
+                    <BootstrapContainer ref={this.topOfPageRef}>
                         <Wrapper>
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
@@ -415,12 +415,12 @@ class TemperamentProfile extends Component {
                                     showErrorAlert={this.handleErrorAlert}
                                 />}
                         </Wrapper>
-                    </Container>
+                    </BootstrapContainer>
                 );
 
             case 2:
                 return (
-                    <Container ref={this.topOfPageRef}>
+                    <BootstrapContainer ref={this.topOfPageRef}>
                         <Wrapper>
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
@@ -434,12 +434,12 @@ class TemperamentProfile extends Component {
                                 showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
-                    </Container>
+                    </BootstrapContainer>
                 );
 
             case 3:
                 return (
-                    <Container ref={this.topOfPageRef}>
+                    <BootstrapContainer ref={this.topOfPageRef}>
                         <Wrapper>
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
@@ -453,12 +453,12 @@ class TemperamentProfile extends Component {
                                 showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
-                    </Container>
+                    </BootstrapContainer>
                 );
 
             case 4:
                 return (
-                    <Container ref={this.topOfPageRef}>
+                    <BootstrapContainer ref={this.topOfPageRef}>
                         <Wrapper>
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
@@ -472,12 +472,12 @@ class TemperamentProfile extends Component {
                                 showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
-                    </Container>
+                    </BootstrapContainer>
                 );
 
             case 5:
                 return (
-                    <Container ref={this.topOfPageRef}>
+                    <BootstrapContainer ref={this.topOfPageRef}>
                         <Wrapper>
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
@@ -491,12 +491,12 @@ class TemperamentProfile extends Component {
                                 showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
-                    </Container>
+                    </BootstrapContainer>
                 );
 
             case 6:
                 return (
-                    <Container ref={this.topOfPageRef}>
+                    <BootstrapContainer ref={this.topOfPageRef}>
                         <Wrapper>
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
@@ -510,12 +510,12 @@ class TemperamentProfile extends Component {
                                 showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
-                    </Container>
+                    </BootstrapContainer>
                 );
 
             case 7:
                 return (
-                    <Container ref={this.topOfPageRef}>
+                    <BootstrapContainer ref={this.topOfPageRef}>
                         <Wrapper>
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
@@ -529,12 +529,12 @@ class TemperamentProfile extends Component {
                                 showErrorAlert={this.handleErrorAlert}
                             />
                         </Wrapper>
-                    </Container>
+                    </BootstrapContainer>
                 );
 
             default:
                 return (
-                    <Container ref={this.topOfPageRef}>
+                    <BootstrapContainer ref={this.topOfPageRef}>
                         <Wrapper>
                             <Typography gutterBottom variant='h3'>
                                 {name}'s Temperament Profile
@@ -544,7 +544,7 @@ class TemperamentProfile extends Component {
                                 Go Back to Profiles
                             </Button>
                         </Wrapper>
-                    </Container>
+                    </BootstrapContainer>
                 );
         };
     };

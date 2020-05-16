@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import api from '../api';
-import Container from 'react-bootstrap/Container';
 import axios from 'axios';
 import config from '../config/config';
 import Typography from '@material-ui/core/Typography';
@@ -11,7 +10,8 @@ import {
     Label,
     Button,
     SmallWarningButton,
-    Image
+    ImageMedium,
+    BootstrapContainer
 } from '../style/dog-styles';
 
 class AlbumUpload extends Component {
@@ -165,7 +165,7 @@ class AlbumUpload extends Component {
         } = this.state;
 
         return (
-            <Container>
+            <BootstrapContainer>
                 <Wrapper>
                     <Typography gutterBottom variant='h3' component='h3'>
                         Upload a Photo Album of
@@ -188,7 +188,7 @@ class AlbumUpload extends Component {
                                 {albumUrls.map((url, index) =>
                                     <div key={index}>
                                         <p>
-                                            <Image src={url} alt='Album Image' />
+                                            <ImageMedium src={url} alt='Album Image' />
                                             <SmallWarningButton
                                                 onClick={() => this.handleRemoveImage(index)}
                                             >
@@ -203,7 +203,7 @@ class AlbumUpload extends Component {
                     <Button onClick={this.handleBackToBiography}>Back to Biography</Button>
                     <Button onClick={this.handlePostAlbum}>Save Album & Submit Profile</Button>
                 </Wrapper>
-            </Container>
+            </BootstrapContainer>
         );
     };
 };

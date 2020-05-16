@@ -7,9 +7,6 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import resources from '../../resources/resources';
 import Checkbox from '@material-ui/core/Checkbox';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
 import Modal from 'react-modal';
 import { IoIosClose } from 'react-icons/io';
 import {
@@ -22,7 +19,10 @@ import {
     SmallDangerButton,
     CloseModalIcon,
     FilterRow,
-    InputWrapper
+    InputWrapper,
+    BootstrapRow,
+    BootstrapCol,
+    BootstrapForm
 } from '../../style/dog-styles';
 
 Modal.setAppElement('#root');
@@ -197,7 +197,7 @@ class ProfilesFilter extends Component {
                     <SearchLabel>Search</SearchLabel>
 
                     <InputWrapper>
-                        <Form.Control
+                        <BootstrapForm.Control
                             type='text'
                             size='sm'
                             onChange={this.handleSearchString}
@@ -257,8 +257,8 @@ class ProfilesFilter extends Component {
                         />
                     </CloseModalIcon>
                     <WrapperCol>
-                        <Row>
-                            <Col sm={true}>
+                        <BootstrapRow>
+                            <BootstrapCol sm={true}>
                                 <Label>Age Range Start: </Label>
                                 <Select
                                     components={animatedComponents}
@@ -269,8 +269,8 @@ class ProfilesFilter extends Component {
                                     }}
                                     onChange={this.handleAgeRangeLow}
                                 />
-                            </Col>
-                            <Col sm={true}>
+                            </BootstrapCol>
+                            <BootstrapCol sm={true}>
                                 <Label>Age Range End: </Label>
                                 <Select
                                     components={animatedComponents}
@@ -281,13 +281,13 @@ class ProfilesFilter extends Component {
                                     }}
                                     onChange={this.handleAgeRangeHigh}
                                 />
-                            </Col>
-                        </Row>
+                            </BootstrapCol>
+                        </BootstrapRow>
                         <br />
                         <Divider />
 
-                        <Row>
-                            <Col sm={true}>
+                        <BootstrapRow>
+                            <BootstrapCol sm={true}>
                                 <Label>Order By: </Label>
                                 <RadioGroup
                                     name='orderByRadio'
@@ -322,14 +322,14 @@ class ProfilesFilter extends Component {
                                         />
                                     </Radios>
                                 </RadioGroup>
-                            </Col>
-                        </Row>
+                            </BootstrapCol>
+                        </BootstrapRow>
                         <Divider />
                         <br />
 
                         {filterParams.orderBy !== '0' &&                            
-                            <Row>
-                                <Col sm={true}>
+                            <BootstrapRow>
+                                <BootstrapCol sm={true}>
                                     {filterParams.orderBy === '1' &&
                                         <div>
                                             <Label>Order Ages: </Label>
@@ -433,13 +433,13 @@ class ProfilesFilter extends Component {
                                                 </Radios>
                                             </RadioGroup>
                                         </div>}
-                                </Col>
-                            </Row>}
+                                </BootstrapCol>
+                            </BootstrapRow>}
 
                         {filterParams.orderBy !== '0' && <Divider />}
 
-                        <Row>
-                            <Col sm={true}>
+                        <BootstrapRow>
+                            <BootstrapCol sm={true}>
                                 <Label>Filter By Gender: </Label>
                                 <RadioGroup
                                     name='genderOrderRadio'
@@ -462,8 +462,8 @@ class ProfilesFilter extends Component {
                                         />
                                     </Radios>
                                 </RadioGroup>
-                            </Col>
-                        </Row>
+                            </BootstrapCol>
+                        </BootstrapRow>
                         <SmallButton onClick={this.handleSubmitFilter}>Filter Profiles</SmallButton>
                         <SmallDangerButton onClick={this.handleClearFilter}>Clear Filter</SmallDangerButton>
                     </WrapperCol>

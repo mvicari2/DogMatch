@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import api from '../api';
-import Container from 'react-bootstrap/Container';
 import axios from 'axios';
 import config from '../config/config';
 import Typography from '@material-ui/core/Typography';
@@ -12,7 +11,8 @@ import {
     WrapperCol,
     Button,
     TitleWrapper,
-    DangerAlert
+    DangerAlert,
+    BootstrapContainer
 } from '../style/dog-styles';
 
 import {
@@ -187,7 +187,7 @@ class UpdateDoggo extends Component {
         } = this.state;
 
         return (
-            <Container>
+            <BootstrapContainer>
                 <TitleWrapper>
                     <Typography
                         gutterBottom
@@ -244,7 +244,7 @@ class UpdateDoggo extends Component {
                         name={name}
                         history={this.props.history}
                     />}
-            </Container>
+            </BootstrapContainer>
         );
     };
 };
